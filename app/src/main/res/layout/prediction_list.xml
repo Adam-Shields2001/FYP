@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="175dp"
+    android:id="@+id/main_layout">
+
+    <ImageView
+        android:id="@+id/containerImage"
+        android:layout_width="0dp"
+        android:layout_height="170dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/container_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:id="@+id/name_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:text="UFC 283: Teixeira vs. Hill"
+        android:textColor="@color/black"
+        android:singleLine="false"
+        app:layout_constraintStart_toStartOf="@id/containerImage"
+        app:layout_constraintTop_toTopOf="@id/containerImage" />
+
+    <TextView
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:id="@+id/firstName_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="25dp"
+        android:text="Max"
+        android:textColor="@color/black"
+        android:singleLine="false"
+        app:layout_constraintStart_toStartOf="@id/containerImage"
+        app:layout_constraintTop_toTopOf="@id/name_text" />
+
+    <TextView
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:id="@+id/lastName_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="25dp"
+        android:text="Holloway"
+        android:textColor="@color/black"
+        android:singleLine="false"
+        app:layout_constraintStart_toEndOf="@id/firstName_text"
+        app:layout_constraintTop_toTopOf="@id/name_text" />
+
+    <TextView
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:id="@+id/vs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="25dp"
+        android:text="vs"
+        android:textColor="@color/black"
+        android:singleLine="false"
+        app:layout_constraintStart_toEndOf="@id/lastName_text"
+        app:layout_constraintTop_toTopOf="@id/name_text" />
+
+    <TextView
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:id="@+id/firstName_text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="25dp"
+        android:text="Glover"
+        android:textColor="@color/black"
+        android:singleLine="false"
+        app:layout_constraintStart_toEndOf="@id/vs"
+        app:layout_constraintTop_toTopOf="@id/name_text" />
+
+    <TextView
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:id="@+id/lastName_text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="25dp"
+        android:text="Teixeira"
+        android:textColor="@color/black"
+        android:singleLine="false"
+        app:layout_constraintStart_toEndOf="@id/firstName_text2"
+        app:layout_constraintTop_toTopOf="@id/name_text" />
+
+    <TextView
+        android:id="@+id/wins"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="5dp"
+        android:text="Wins: "
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="@id/containerImage"
+        app:layout_constraintTop_toBottomOf="@id/lastName_text" />
+
+    <TextView
+        android:id="@+id/wins_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="5dp"
+        android:text="20"
+        android:textSize="15dp"
+        app:layout_constraintStart_toEndOf="@id/wins"
+        app:layout_constraintTop_toBottomOf="@id/lastName_text" />
+
+    <TextView
+        android:id="@+id/wins2"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="5dp"
+        android:text="Wins: "
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toEndOf="@id/wins_text"
+        app:layout_constraintTop_toBottomOf="@id/firstName_text2" />
+
+    <TextView
+        android:id="@+id/wins_text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="5dp"
+        android:text="20"
+        android:textSize="15dp"
+        app:layout_constraintStart_toEndOf="@id/wins2"
+        app:layout_constraintTop_toBottomOf="@id/lastName_text2" />
+
+    <TextView
+        android:id="@+id/losses"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="5dp"
+        android:text="Losses: "
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="@id/containerImage"
+        app:layout_constraintTop_toBottomOf="@id/wins_text" />
+
+    <TextView
+        android:id="@+id/losses_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="5dp"
+        android:text="5"
+        android:textSize="15dp"
+        app:layout_constraintStart_toEndOf="@id/losses"
+        app:layout_constraintTop_toBottomOf="@id/wins_text" />
+
+    <TextView
+        android:id="@+id/losses2"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="5dp"
+        android:text="Losses: "
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toEndOf="@id/losses_text"
+        app:layout_constraintTop_toBottomOf="@id/wins" />
+
+    <TextView
+        android:id="@+id/losses_text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="5dp"
+        android:text="5"
+        android:textSize="15dp"
+        app:layout_constraintStart_toEndOf="@id/losses2"
+        app:layout_constraintTop_toBottomOf="@id/wins_text" />
+
+    <TextView
+        android:id="@+id/draws"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="5dp"
+        android:text="Draws: "
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="@id/containerImage"
+        app:layout_constraintTop_toBottomOf="@id/losses_text" />
+
+    <TextView
+        android:id="@+id/draws_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="5dp"
+        android:text="0"
+        android:textSize="15dp"
+        app:layout_constraintStart_toEndOf="@id/draws"
+        app:layout_constraintTop_toBottomOf="@id/losses_text" />
+
+    <TextView
+        android:id="@+id/draws2"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="5dp"
+        android:text="Draws: "
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toEndOf="@id/draws_text"
+        app:layout_constraintTop_toBottomOf="@id/losses_text" />
+
+    <TextView
+        android:id="@+id/draws_text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="5dp"
+        android:text="0"
+        android:textSize="15dp"
+        app:layout_constraintStart_toEndOf="@id/draws2"
+        app:layout_constraintTop_toBottomOf="@id/losses_text" />
+
+    <TextView
+        android:id="@+id/moneyline"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="5dp"
+        android:text="Moneyline: "
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="@id/containerImage"
+        app:layout_constraintTop_toBottomOf="@id/draws_text" />
+
+    <TextView
+        android:id="@+id/moneyline_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="5dp"
+        android:text="72"
+        android:textSize="15dp"
+        app:layout_constraintStart_toEndOf="@id/moneyline"
+        app:layout_constraintTop_toBottomOf="@id/draws_text" />
+
+    <TextView
+        android:id="@+id/moneyline2"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="5dp"
+        android:text="Moneyline: "
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toEndOf="@id/moneyline_text"
+        app:layout_constraintTop_toBottomOf="@id/draws_text" />
+
+    <TextView
+        android:id="@+id/moneyline_text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="5dp"
+        android:text="72"
+        android:textSize="15dp"
+        app:layout_constraintStart_toEndOf="@id/moneyline2"
+        app:layout_constraintTop_toBottomOf="@id/draws_text" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

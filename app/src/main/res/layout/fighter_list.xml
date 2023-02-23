@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="175dp"
+    android:id="@+id/main_layout">
+
+    <ImageView
+        android:id="@+id/containerImage"
+        android:layout_width="0dp"
+        android:layout_height="170dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/container_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:id="@+id/firstName_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Max"
+        android:textColor="@color/black"
+        android:singleLine="false"
+        app:layout_constraintStart_toStartOf="@id/containerImage"
+        app:layout_constraintTop_toTopOf="@id/containerImage" />
+
+    <TextView
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:id="@+id/lastName_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Holloway"
+        android:textColor="@color/black"
+        android:singleLine="false"
+        app:layout_constraintStart_toEndOf="@id/firstName_text"
+        app:layout_constraintTop_toTopOf="@id/containerImage" />
+
+    <TextView
+        android:id="@+id/nickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:text="Nickname: "
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="15dp"
+        app:layout_constraintStart_toStartOf="@id/containerImage"
+        app:layout_constraintTop_toBottomOf="@id/firstName_text" />
+
+    <TextView
+        android:id="@+id/nickname_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="20dp"
+        android:text="Blessed"
+        android:textSize="15dp"
+        app:layout_constraintStart_toEndOf="@id/nickname"
+        app:layout_constraintTop_toBottomOf="@id/firstName_text" />
+
+    <TextView
+        android:id="@+id/wins"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:text="Wins: "
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="@id/containerImage"
+        app:layout_constraintTop_toBottomOf="@id/nickname_text" />
+
+    <TextView
+        android:id="@+id/wins_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:text="20"
+        android:textSize="15dp"
+        app:layout_constraintStart_toEndOf="@id/wins"
+        app:layout_constraintTop_toBottomOf="@id/nickname_text" />
+
+    <TextView
+        android:id="@+id/losses"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:text="Losses: "
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="@id/containerImage"
+        app:layout_constraintTop_toBottomOf="@id/wins_text" />
+
+    <TextView
+        android:id="@+id/losses_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:text="5"
+        android:textSize="15dp"
+        app:layout_constraintStart_toEndOf="@id/losses"
+        app:layout_constraintTop_toBottomOf="@id/wins_text" />
+
+    <TextView
+        android:id="@+id/draws"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:text="Draws: "
+        android:textSize="10dp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="@id/containerImage"
+        app:layout_constraintTop_toBottomOf="@id/losses_text" />
+
+    <TextView
+        android:id="@+id/draws_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:text="0"
+        android:textSize="10dp"
+        app:layout_constraintStart_toEndOf="@id/draws"
+        app:layout_constraintTop_toBottomOf="@id/losses_text" />
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

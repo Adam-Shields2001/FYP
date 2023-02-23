@@ -1,0 +1,7 @@
+<resources>
+    <string-array name="victory_methods">
+        <item>Knockout</item>
+        <item>Submission</item>
+        <item>Decision</item>
+    </string-array>
+</resources>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="175dp"
+    android:id="@+id/main_layout">
+
+    <ImageView
+        android:id="@+id/containerImage"
+        android:layout_width="0dp"
+        android:layout_height="170dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/container_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:id="@+id/shortName_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:text="UFC 283"
+        android:textColor="@color/black"
+        android:singleLine="false"
+        app:layout_constraintStart_toStartOf="@id/containerImage"
+        app:layout_constraintTop_toTopOf="@id/containerImage" />
+
+    <TextView
+        android:id="@+id/name_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:text="UFC283: Teixeira vs. Hill "
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="15dp"
+        app:layout_constraintStart_toStartOf="@id/containerImage"
+        app:layout_constraintTop_toBottomOf="@id/shortName_text" />
+
+    <TextView
+        android:id="@+id/year"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:text="Year: "
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="@id/containerImage"
+        app:layout_constraintTop_toBottomOf="@id/name_text" />
+
+    <TextView
+        android:id="@+id/year_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:text="2023"
+        android:textSize="15dp"
+        app:layout_constraintStart_toEndOf="@id/year"
+        app:layout_constraintTop_toBottomOf="@id/name_text" />
+
+    <TextView
+        android:id="@+id/dateTime"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:text="Date and Start time: "
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="@id/containerImage"
+        app:layout_constraintTop_toBottomOf="@id/year_text" />
+
+    <TextView
+        android:id="@+id/dateTime_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:text="2023-01-21T18:00:00"
+        android:textSize="15dp"
+        app:layout_constraintStart_toEndOf="@id/dateTime"
+        app:layout_constraintTop_toBottomOf="@id/year_text" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
