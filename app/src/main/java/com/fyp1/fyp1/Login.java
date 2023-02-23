@@ -14,11 +14,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fyp1.fyp1.menu.Menu;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Login extends AppCompatActivity implements View.OnClickListener{
 
@@ -63,7 +70,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
                 break;
 
             case R.id.forgotPassword:
-                startActivity(new Intent(this, ForgotPassword.class));
+                startActivity(new Intent(this, ScoringSystem.class));
                 break;
         }
     }
@@ -104,9 +111,30 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
 
                 if(task.isSuccessful()) {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    String uid = user.getUid();
+
+                    FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("uid", uid);
+
+                    firestore.collection("Users")
+                            .document(uid)
+                            .set(data)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d("TAG", "User data added successfully");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.d("TAG", "Error adding user data: " + e.getMessage());
+                                }
+                            });
 
                     if(user.isEmailVerified()) {
-                        startActivity(new Intent(Login.this, Homepage.class));
+                        startActivity(new Intent(Login.this, Menu.class));
                         progressBar.setVisibility(View.GONE);
                     } else {
                         user.sendEmailVerification();
@@ -120,6 +148,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
                 }
             }
         });
+
+
 
     }
 }

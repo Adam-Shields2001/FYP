@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/home"
+            android:title="Home" />
+
+        <item
+            android:id="@+id/nav_scoring"
+            android:icon="@drawable/scoring"
+            android:title="Scoring" />
+
+        <item
+            android:id="@+id/nav_predictions"
+            android:icon="@drawable/prediction"
+            android:title="Predictions" />
+
+        <item
+            android:id="@+id/nav_fighters"
+            android:icon="@drawable/profile"
+            android:title="Fighters" />
+
+        <item
+            android:id="@+id/nav_events"
+            android:icon="@drawable/profile"
+            android:title="Upcoming Events" />
+
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/settings"
+            android:title="Settings" />
+
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item android:title="Communicate">
+            <menu>
+                <group>
+                    <item
+                        android:id="@+id/nav_share"
+                        android:icon="@drawable/share"
+                        android:title="Share" />
+
+                    <item
+                        android:id="@+id/nav_donate"
+                        android:icon="@drawable/support"
+                        android:title="Donate" />
+
+                </group>
+            </menu>
+
+        </item>
+
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item android:title="Authenticate">
+            <menu>
+                <group>
+                    <item
+                        android:id="@+id/nav_logout"
+                        android:icon="@drawable/logout"
+                        android:title="logout" />
+                </group>
+            </menu>
+        </item>
+    </group>
+
+</menu>

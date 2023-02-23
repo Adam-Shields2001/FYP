@@ -1,4 +1,4 @@
-package com.fyp1.fyp1;
+package com.fyp1.fyp1.models;
 
 public class User {
 
