@@ -109,6 +109,7 @@ public class ScoringSystem extends AppCompatActivity {
         buttonReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                redheadCount =0;
                 resetTimer();
             }
         });
@@ -145,6 +146,7 @@ public class ScoringSystem extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 redheadCount++;
+                //redStrikeScore.setText(redheadCount);
 
                 // Initialize the Firebase Realtime Database
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -213,6 +215,30 @@ public class ScoringSystem extends AppCompatActivity {
 //        });
 //    }
 
+    private void amountOfUsers() {
+        DatabaseReference strikesRef = FirebaseDatabase.getInstance().getReference("Strikes");
+        Set<String> userIds = new HashSet<>();
+
+        strikesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    for (DataSnapshot strikeSnapshot : userSnapshot.getChildren()) {
+                        String userId = userSnapshot.getKey();
+                        userIds.add(userId);
+                    }
+                }
+
+                int numUsers = userIds.size();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle error
+            }
+        });
+    }
+
     private void validateScoresForAllUsers() {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users");
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -237,7 +263,7 @@ public class ScoringSystem extends AppCompatActivity {
         DatabaseReference strikesRef = FirebaseDatabase.getInstance().getReference("Strikes").child(uid).child("head_strikes");
 
         // Loop through 5-second intervals of the timer
-        for (int i = 0; i < 300; i += 5) {
+        for (int i = 300; i >= 0; i -= 5) {
             // Calculate the start and end times for the current 5-second interval
             long startTimer = i * 1000;
             long endTimer = (i + 5) * 1000;
@@ -272,7 +298,7 @@ public class ScoringSystem extends AppCompatActivity {
                         query.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (percentage > 50) {
+                                if (percentage >= 50) {
                                     Toast.makeText(ScoringSystem.this, "Scores Validated for user " + uid, Toast.LENGTH_LONG).show();
                                 } else {
                                     for (DataSnapshot strikesSnapshot : snapshot.getChildren()) {
