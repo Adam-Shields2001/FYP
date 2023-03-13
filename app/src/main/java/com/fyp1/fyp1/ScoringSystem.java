@@ -1,5 +1,7 @@
 package com.fyp1.fyp1;
 
+import static com.android.volley.VolleyLog.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,6 +17,8 @@ import android.widget.Toast;
 
 import com.fyp1.fyp1.models.Strikes;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,14 +26,19 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 public class ScoringSystem extends AppCompatActivity {
@@ -46,8 +55,6 @@ public class ScoringSystem extends AppCompatActivity {
 
     private int redheadCount, redbodyCount, redlegCount, redtakedownCount = 0;
     private int blueheadCount, bluebodyCount, bluelegCount, bluetakedownCount = 0;
-
-    private int totalUsers = 3;
 
     private TextView redStrikeScore, blueStrikeScore;
 
@@ -146,20 +153,39 @@ public class ScoringSystem extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 redheadCount++;
-                //redStrikeScore.setText(redheadCount);
 
-                // Initialize the Firebase Realtime Database
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                // Initialize the Firebase Firestore
+                FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+                // Create a new collection with the name "Strikes"
+                CollectionReference strikesCollection = firestore.collection("Strikes");
 
                 // Get the current user
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-                // Create a reference to the database location where you want to write data
-                DatabaseReference reference = database.getReference("Strikes").child(user.getUid());
+                // Create a new document with a generated ID
+                DocumentReference documentReference = strikesCollection.document();
 
-                reference.child("head_strikes").push().setValue(new Strikes(elapsedMinutes, elapsedSeconds, redheadCount));
+                // Create a new Strikes object
+                Strikes strikes = new Strikes(elapsedMinutes, elapsedSeconds, redheadCount);
+
+                // Add the Strikes object to the document
+                documentReference.set(strikes)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error adding document", e);
+                            }
+                        });
             }
         });
+
 
         timerRunning = true;
         buttonStartPause.setText("Pause");
@@ -189,32 +215,6 @@ public class ScoringSystem extends AppCompatActivity {
         roundTime.setText(timeLeftFormatted);
     }
 
-//    private void writeToDatabase(int time, int redheadCount) {
-//        // Initialize the Firebase Realtime Database
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//
-//        // Get the current user
-//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//
-//        // Create a reference to the database location where you want to write data
-//        DatabaseReference reference = database.getReference("Strikes").child(user.getUid());
-//
-//        //Get current value of head strikes
-//        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//
-//                //Set new value of head strikes
-//                reference.child("head_strikes").push().setValue(new Strikes(time, redheadCount));
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                // handle error
-//            }
-//        });
-//    }
-
     private void amountOfUsers() {
         DatabaseReference strikesRef = FirebaseDatabase.getInstance().getReference("Strikes");
         Set<String> userIds = new HashSet<>();
@@ -228,7 +228,6 @@ public class ScoringSystem extends AppCompatActivity {
                         userIds.add(userId);
                     }
                 }
-
                 int numUsers = userIds.size();
             }
 
@@ -260,7 +259,8 @@ public class ScoringSystem extends AppCompatActivity {
     private void validateScores(String uid) {
 
         // Create a reference to the database location where the strikes are stored
-        DatabaseReference strikesRef = FirebaseDatabase.getInstance().getReference("Strikes").child(uid).child("head_strikes");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference strikesRef = db.collection("Strikes");
 
         // Loop through 5-second intervals of the timer
         for (int i = 300; i >= 0; i -= 5) {
@@ -268,62 +268,70 @@ public class ScoringSystem extends AppCompatActivity {
             long startTimer = i * 1000;
             long endTimer = (i + 5) * 1000;
 
-            // Query the strikes for the current user within the timer duration
-            strikesRef.orderByChild("elapsedMinutes").startAt(startTimer / 1000 / 60).endAt(endTimer / 1000 / 60).addListenerForSingleValueEvent(new ValueEventListener() {
+            // Query the strikes for all users within the timer duration
+            Query query = strikesRef.whereGreaterThanOrEqualTo("elapsedMinutes", startTimer / 1000 / 60)
+                    .whereLessThanOrEqualTo("elapsedMinutes", endTimer / 1000 / 60);
+            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                    int totalStrikes = (int) snapshot.getChildrenCount();
+                    Map<String, Integer> validStrikesCount = new HashMap<>();
+                    Map<String, Integer> invalidStrikesCount = new HashMap<>();
+                    Map<String, Integer> totalStrikesCount = new HashMap<>();
 
-                    // Initialize counters for valid and invalid strikes
-                    int validStrikes = 0;
-                    int invalidStrikes = 0;
+                    // Loop through the strikes for all users and group them by user ID
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        String userId = document.getString("userId");
 
-                    for (DataSnapshot strikesSnapshot : snapshot.getChildren()) {
-                        Strikes strike = strikesSnapshot.getValue(Strikes.class);
+                        // Initialize counters for valid and invalid strikes for the current user
+                        int validStrikes = 0;
+                        int invalidStrikes = 0;
 
-                        float strikeDuration = strike.getElapsedMinutes() * 60 * 1000 + strike.getElapsedSeconds() * 1000;
-                        // Check if the strike occurred within the current 5-second interval
-                        if (strikeDuration >= startTimer && strikeDuration <= endTimer) {
-                            validStrikes++;
-                        } else {
-                            invalidStrikes++;
+                        // Get the strikes for the current user
+                        List<Map<String, Object>> strikes = (List<Map<String, Object>>) document.get("strikes");
+                        for (Map<String, Object> strike : strikes) {
+                            float strikeDuration = ((Long) strike.get("elapsedMinutes")) * 60 * 1000 + ((Long) strike.get("elapsedSeconds")) * 1000;
+                            // Check if the strike occurred within the current 5-second interval
+                            if (strikeDuration >= startTimer && strikeDuration <= endTimer) {
+                                validStrikes++;
+                            } else {
+                                invalidStrikes++;
+                            }
                         }
+
+                        // Update the counters for the current user
+                        validStrikesCount.put(userId, validStrikes);
+                        invalidStrikesCount.put(userId, invalidStrikes);
+                        totalStrikesCount.put(userId, strikes.size());
                     }
 
-                    if (validStrikes < invalidStrikes) {
-                        float percentage = validStrikes / totalStrikes * 100;
-                        // Delete the strikes from the database for the current 5-second interval
-                        Query query = strikesRef.orderByChild("elapsedMinutes").startAt(startTimer / 1000 / 60).endAt(endTimer / 1000 / 60);
-                        query.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (percentage >= 50) {
-                                    Toast.makeText(ScoringSystem.this, "Scores Validated for user " + uid, Toast.LENGTH_LONG).show();
-                                } else {
-                                    for (DataSnapshot strikesSnapshot : snapshot.getChildren()) {
-                                        strikesSnapshot.getRef().removeValue();
+                    // Loop through the user counters and validate the scores for each user
+                    for (String uid : validStrikesCount.keySet()) {
+                        int validStrikes = validStrikesCount.get(uid);
+                        int invalidStrikes = invalidStrikesCount.get(uid);
+                        int totalStrikes = totalStrikesCount.get(uid);
+
+                        float percentage = ((float) validStrikes / (float) totalStrikes) * 100;
+                        if (percentage < 50) {
+                            // Delete the strikes from the database for the current 5-second interval for all users
+                            com.google.firebase.firestore.Query query = strikesRef.whereEqualTo("userId", uid)
+                                    .whereGreaterThanOrEqualTo("elapsedMinutes", startTimer / 1000 / 60)
+                                    .whereLessThanOrEqualTo("elapsedMinutes", endTimer / 1000 / 60);
+                            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        document.getReference().delete();
                                     }
                                 }
-                            }
-
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                // Handle database error
-                            }
-                        });
+                            });
+                        } else {
+                            Toast.makeText(ScoringSystem.this, "Scores Validated for user " + uid, Toast.LENGTH_LONG).show();
+                        }
                     }
-                    // Reset the counters for the next 5-second interval
-                    validStrikes = 0;
-                    invalidStrikes = 0;
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    // Handle database error
                 }
             });
         }
     }
+
 }
