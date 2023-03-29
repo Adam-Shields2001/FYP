@@ -2,14 +2,13 @@ package com.fyp1.fyp1.models;
 
 public class Strikes {
 
-    private float elapsedMinutes, elapsedSeconds;
+    private float elapsedTimeInSeconds;
     private int headStrike, round;
     private String uid;
 
-    public Strikes(String uid, float elapsedMinutes, float elapsedSeconds, int headStrike, int round) {
+    public Strikes(String uid, float elapsedTimeInSeconds, int headStrike, int round) {
         this.uid = uid;
-        this.elapsedMinutes = elapsedMinutes;
-        this.elapsedSeconds = elapsedSeconds;
+        this.elapsedTimeInSeconds = elapsedTimeInSeconds;
         this.headStrike = headStrike;
         this.round = round;
     }
@@ -22,20 +21,12 @@ public class Strikes {
         this.uid = uid;
     }
 
-    public float getElapsedMinutes() {
-        return elapsedMinutes;
+    public float getElapsedTimeInSeconds() {
+        return elapsedTimeInSeconds;
     }
 
-    public void setElapsedMinutes(float elapsedMinutes) {
-        this.elapsedMinutes = elapsedMinutes;
-    }
-
-    public float getElapsedSeconds() {
-        return elapsedSeconds;
-    }
-
-    public void setElapsedSeconds(float elapsedSeconds) {
-        this.elapsedSeconds = elapsedSeconds;
+    public void setElapsedTimeInSeconds(float elapsedTimeInSeconds) {
+        this.elapsedTimeInSeconds = elapsedTimeInSeconds;
     }
 
     public int getHeadStrike() {

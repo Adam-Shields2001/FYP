@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.fyp1.fyp1.FightSelection;
 import com.fyp1.fyp1.Login;
 import com.fyp1.fyp1.Predictions;
 import com.fyp1.fyp1.R;
@@ -57,7 +58,7 @@ public class Menu extends AppCompatActivity {
                 if(id == R.id.nav_home) {
                     startActivity(new Intent(Menu.this, Menu.class));
                 } else if (id == R.id.nav_scoring) {
-                    startActivity(new Intent(Menu.this, ScoringSystem.class));
+                    startActivity(new Intent(Menu.this, FightSelection.class));
                 } else if (id == R.id.nav_predictions) {
                     startActivity(new Intent(Menu.this, Predictions.class));
                 } else if (id == R.id.nav_fighters) {

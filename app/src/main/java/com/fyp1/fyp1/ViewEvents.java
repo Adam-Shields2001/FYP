@@ -28,7 +28,6 @@ public class ViewEvents extends AppCompatActivity {
     private RequestQueue requestQueue;
     private List<EventsModel> eventsList;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

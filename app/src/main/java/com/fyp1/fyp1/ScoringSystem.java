@@ -125,7 +125,7 @@ public class ScoringSystem extends AppCompatActivity {
 //                round++;
 //                Intent intent = new Intent(ScoringSystem.this, ScoringSystem.class);
 //                startActivity(intent);
-                validateScores(uniqueUserIds);
+                validateScores();
             }
         });
 
@@ -139,9 +139,9 @@ public class ScoringSystem extends AppCompatActivity {
                 timeLeftInMillis = millisUntilFinished;
                 updateCountDownText();
                 elapsedTimeInMillis = startTime + timeLeftInMillis;
-                elapsedTimeInSeconds = elapsedTimeInMillis / 1000.0f;
-                elapsedMinutes = (int) (elapsedTimeInSeconds / 60);
-                elapsedSeconds = (int) (elapsedTimeInSeconds % 60);
+                elapsedTimeInSeconds = Math.round(elapsedTimeInMillis / 1000.0f);
+//                elapsedMinutes = (int) (elapsedTimeInSeconds / 60);
+//                elapsedSeconds = (int) (elapsedTimeInSeconds % 60);
             }
 
             @Override
@@ -175,7 +175,7 @@ public class ScoringSystem extends AppCompatActivity {
                 DocumentReference documentReference = strikesCollection.document();
 
                 // Create a new Strikes object
-                Strikes strikes = new Strikes(uid, elapsedMinutes, elapsedSeconds, redheadCount, round);
+                Strikes strikes = new Strikes(uid, elapsedTimeInSeconds, redheadCount, round);
 
                 // Add the Strikes object to the document
                 documentReference.set(strikes)
@@ -223,9 +223,11 @@ public class ScoringSystem extends AppCompatActivity {
         roundTime.setText(timeLeftFormatted);
     }
 
-    private Set<String> uniqueUserIds = new HashSet<>();
+    private void validateScores() {
 
-    private void totalUsers() {
+        Set<String> uniqueUserIds = new HashSet<>();
+
+        // Create a reference to the database location where the strikes are stored
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference strikesRef = db.collection("Strikes");
 
@@ -234,7 +236,6 @@ public class ScoringSystem extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-
                     // Loop through all the documents in the collection
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         String userId = document.getString("uid");
@@ -244,84 +245,70 @@ public class ScoringSystem extends AppCompatActivity {
                 } else {
                     Log.d(TAG, "Error getting documents: ", task.getException());
                 }
-            }
-        });
-    }
 
-    private void validateScores(Set<String> uniqueUserIds) {
-        totalUsers();
-        // Create a reference to the database location where the strikes are stored
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference strikesRef = db.collection("Strikes");
+                // Loop through 5-second intervals of the timer
+                for (int i = 300; i >= 0; i -= 5) {
+                    // Calculate the start and end times for the current 5-second interval
+                    long startTimer = i * 1000;
+                    long endTimer = (i - 5) * 1000;
+                    int currentInterval = i;
+                    Log.d(TAG, "Number of unique user IDs: " + uniqueUserIds.size());
 
-        // Loop through 5-second intervals of the timer
-        for (int i = 300; i >= 0; i -= 5) {
-            // Calculate the start and end times for the current 5-second interval
-            long startTimer = i * 1000;
-            long endTimer = (i + 5) * 1000;
+                    // Query the strikes for all users within the timer duration
+                    Query query = strikesRef.whereGreaterThanOrEqualTo("elapsedTimeInSeconds", startTimer / 1000 / 60)
+                            .whereLessThanOrEqualTo("elapsedTimeInSeconds", endTimer / 1000 / 60);
+                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            Map<String, Integer> strikesCount = new HashMap<>();
 
-            // Query the strikes for all users within the timer duration
-            Query query = strikesRef.whereGreaterThanOrEqualTo("elapsedMinutes", startTimer / 1000 / 60)
-                    .whereLessThanOrEqualTo("elapsedMinutes", endTimer / 1000 / 60);
-            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    Map<String, Integer> strikesCount = new HashMap<>();
-                    int totalUsersCount = 0;
-
-                    // Loop through the strikes for all users and group them by user ID
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        String userId = document.getString("uid");
-                        // Increment the strikes counter for the current user
-                        int strikes;
-                        if (strikesCount.containsKey(userId)) {
-                            strikes = strikesCount.get(userId);
-                        } else {
-                            strikes = 0;
-                        }
-                        strikesCount.put(userId, strikes + 1);
-                        // Increment the total users count
-                        totalUsersCount++;
-                        // Add the user ID to the set of scoring users
-                        //allScoringUserIds.add(userId);
-                    }
-
-                    // Calculate the number of scoring users in the interval
-                    int scoringUsersCount = strikesCount.size();
-
-                    // Calculate the number of unscoring users in the interval
-                    int unscoringUsersCount = uniqueUserIds.size() - scoringUsersCount;
-
-                    // Calculate the total number of users in the interval
-                    int totalIntervalUsersCount = scoringUsersCount + unscoringUsersCount;
-
-                    // Calculate the percentage of scoring users
-                    float percentage = ((float) scoringUsersCount / (float) uniqueUserIds.size()) * 100;
-
-                    // Loop through the user counters and validate the scores for each user
-                    for (String uid : strikesCount.keySet()) {
-                        int strikes = strikesCount.get(uid);
-
-                        if (percentage <= 50) {
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        document.getReference().delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                                            }
-                                        }).addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Log.w(TAG, "Error deleting document", e);
-                                            }
-                                        });
-                                    }
+                            // Loop through the strikes for all users and group them by user ID
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String userId = document.getString("uid");
+                                // Increment the strikes counter for the current user
+                                int strikes;
+                                if (strikesCount.containsKey(userId)) {
+                                    strikes = strikesCount.get(userId);
                                 } else {
-                            Toast.makeText(ScoringSystem.this, "Scores Validated for user " + uid, Toast.LENGTH_LONG).show();
-                        }
+                                    strikes = 0;
+                                }
+                                strikesCount.put(userId, strikes + 1);
+                            }
+
+                            // Calculate the number of scoring users in the interval
+                            int scoringUsersCount = 0;
+                            for (String uid : uniqueUserIds) {
+                                if (strikesCount.containsKey(uid)) {
+                                    scoringUsersCount++;
+                                }
+                            }
+
+                            // Calculate the percentage of scoring users
+                            float percentage = ((float) scoringUsersCount / (float) uniqueUserIds.size()) * 100;
+
+                            // Delete strikes if percentage is less than 50
+                            if (percentage < 50) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    document.getReference().delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w(TAG, "Error deleting document", e);
+                                        }
+                                    });
+                                }
+                            } else {
+                                //Log.d(TAG, "Number of unique user IDs: " + uniqueUserIds.size());
+                                //Log.d(TAG, "Scores validated for interval " + currentInterval);
                             }
                         }
-            });
-        }
+                    });
+                }
+            }
+        });
     }
 }

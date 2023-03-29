@@ -2,6 +2,7 @@ package com.fyp1.fyp1;
 
 import android.content.Context;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
@@ -23,4 +24,8 @@ public class VolleySingleton {
     }
 
     public RequestQueue getRequestQueue(){return requestQueue;}
+
+    public <T> void addToRequestQueue(Request<T> request) {
+        getRequestQueue().add(request);
+    }
 }
