@@ -2,7 +2,9 @@ package com.fyp1.fyp1.models;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Fight {
+import java.io.Serializable;
+
+public class Fight implements Serializable {
     String firstName;
     String lastName;
     String opponentFirstName;
@@ -13,10 +15,11 @@ public class Fight {
     String opponentPreFightLosses;
     String moneyLine;
     String opponentMoneyLine;
+    int rounds;
 
     public Fight(String firstName, String lastName, String opponentFirstName, String opponentLastName,
                  String preFightWins, String preFightLosses, String opponentPreFightWins,
-                 String opponentPreFightLosses, String moneyLine, String opponentMoneyLine) {
+                 String opponentPreFightLosses, String moneyLine, String opponentMoneyLine, int position) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.opponentFirstName = opponentFirstName;
@@ -27,6 +30,13 @@ public class Fight {
         this.opponentPreFightLosses = opponentPreFightLosses;
         this.moneyLine = moneyLine;
         this.opponentMoneyLine = opponentMoneyLine;
+
+        // Set rounds based on position in list
+        if (position == 0) {
+            this.rounds = 5;
+        } else {
+            this.rounds = 3;
+        }
     }
 
     public String getFirstName() {
@@ -117,6 +127,13 @@ public class Fight {
         return preFightWins + "-" + preFightLosses + " (UFC) vs. " + opponentPreFightWins + "-" + opponentPreFightLosses + " (UFC)";
     }
 
+    public int getRounds() {
+        return rounds;
+    }
+
+    public void setRounds(int rounds) {
+        this.rounds = rounds;
+    }
 }
 
 

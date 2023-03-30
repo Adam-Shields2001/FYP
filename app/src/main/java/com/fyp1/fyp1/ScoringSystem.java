@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fyp1.fyp1.models.Fight;
 import com.fyp1.fyp1.models.Strikes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -54,6 +55,9 @@ public class ScoringSystem extends AppCompatActivity {
     private long timeLeftInMillis;
     private int numberOfUsers;
 
+    private TextView fighter1TextView;
+    private TextView fighter2TextView;
+
     private int redheadCount, redbodyCount, redlegCount, redtakedownCount = 0;
     private int blueheadCount, bluebodyCount, bluelegCount, bluetakedownCount = 0;
 
@@ -62,6 +66,8 @@ public class ScoringSystem extends AppCompatActivity {
     private long totalTimeInMilliseconds, startTime = -0, elapsedTimeInMillis, time = 0, strikeTime;
     float elapsedTimeInSeconds;
     private int elapsedMinutes, elapsedSeconds, round = 1;
+
+    private String firstName1, lastName1, firstName2, lastName2, rounds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +91,36 @@ public class ScoringSystem extends AppCompatActivity {
         buttonStartPause = (Button) findViewById(R.id.button_start_pause);
         buttonReset = (Button) findViewById(R.id.button_reset);
         nextRound = (Button) findViewById(R.id.button_nextRound);
+
+        //Fight fight = getIntent().getParcelableExtra("fight");
+
+        Fight fight = (Fight) getIntent().getSerializableExtra("fight");
+        int round = fight.getRounds();
+
+        fighter1TextView = findViewById(R.id.fighter1_name);
+        fighter2TextView = findViewById(R.id.fighter2_name);
+        TextView roundTextView = findViewById(R.id.roundsTextView);
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            firstName1 = intent.getStringExtra("firstName1");
+            lastName1 = intent.getStringExtra("lastName1");
+            firstName2 = intent.getStringExtra("firstName2");
+            lastName2 = intent.getStringExtra("lastName2");
+            rounds = intent.getStringExtra("rounds");
+
+            if (rounds != null) {
+                int numRounds = Integer.parseInt(rounds);
+                if (numRounds == 11) {
+                    roundTextView.setText("5 Rounds");
+                } else {
+                    roundTextView.setText("3 Rounds");
+                }
+            }
+
+            fighter1TextView.setText(firstName1 + " " + lastName1);
+            fighter2TextView.setText(firstName2 + " " + lastName2);
+        }
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         CollectionReference usersCollection = firestore.collection("Users");
@@ -133,7 +169,7 @@ public class ScoringSystem extends AppCompatActivity {
     }
 
     private void startTimer() {
-        countDownTimer = new CountDownTimer(5000, 1000) {
+        countDownTimer = new CountDownTimer(300000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 timeLeftInMillis = millisUntilFinished;
@@ -175,7 +211,8 @@ public class ScoringSystem extends AppCompatActivity {
                 DocumentReference documentReference = strikesCollection.document();
 
                 // Create a new Strikes object
-                Strikes strikes = new Strikes(uid, elapsedTimeInSeconds, redheadCount, round);
+                String fightersNames = firstName1 + " " + lastName1 + " vs " + firstName2 + " " + lastName2;
+                Strikes strikes = new Strikes(elapsedTimeInSeconds, redheadCount, round, fightersNames, uid);
 
                 // Add the Strikes object to the document
                 documentReference.set(strikes)

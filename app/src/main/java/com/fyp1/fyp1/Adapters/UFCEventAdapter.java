@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ public class UFCEventAdapter extends RecyclerView.Adapter<UFCEventAdapter.ViewHo
 
     private Context context;
     private List<Fight> fightsList;
+    private OnItemClickListener listener;
 
     public UFCEventAdapter(Context context, List<Fight> fights) {
         this.context = context;
@@ -31,7 +33,7 @@ public class UFCEventAdapter extends RecyclerView.Adapter<UFCEventAdapter.ViewHo
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context)
                 .inflate(R.layout.ufc_event_item, parent, false);
-        return new ViewHolder(view);
+        return new ViewHolder(view, listener);
     }
 
     @Override
@@ -52,7 +54,15 @@ public class UFCEventAdapter extends RecyclerView.Adapter<UFCEventAdapter.ViewHo
         return fightsList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public interface OnItemClickListener {
+        void onItemClick(Fight fight);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public TextView fighter1TextView;
         public TextView fighter2TextView;
@@ -62,7 +72,7 @@ public class UFCEventAdapter extends RecyclerView.Adapter<UFCEventAdapter.ViewHo
         public TextView fighter2OddsTextView;
         LinearLayout linearLayout;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView, OnItemClickListener listener) {
             super(itemView);
 
             fighter1TextView = itemView.findViewById(R.id.fighter1TextView);
@@ -72,9 +82,24 @@ public class UFCEventAdapter extends RecyclerView.Adapter<UFCEventAdapter.ViewHo
             fighter1OddsTextView = itemView.findViewById(R.id.fighter1OddsTextView);
             fighter2OddsTextView = itemView.findViewById(R.id.fighter2OddsTextView);
             linearLayout = itemView.findViewById(R.id.main_layout);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (listener != null) {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onItemClick(fightsList.get(position));
+                }
+            }
         }
     }
 }
+
+
+
 
 
 

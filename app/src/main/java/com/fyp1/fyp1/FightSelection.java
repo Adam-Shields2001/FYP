@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -30,7 +31,7 @@ import java.util.List;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class FightSelection extends AppCompatActivity {
+public class FightSelection extends AppCompatActivity implements UFCEventAdapter.OnItemClickListener {
 
     private RecyclerView recyclerView;
     private List<Fight> fightsList;
@@ -84,15 +85,21 @@ public class FightSelection extends AppCompatActivity {
                                     String preFightLosses2 = fightersArray.getJSONObject(1).getString("PreFightLosses");
                                     String moneyLine2 = fightersArray.getJSONObject(1).getString("Moneyline");
 
+                                    int rounds = 0;
+                                    if (!fightObj.isNull("Rounds")) {
+                                        rounds = fightObj.getInt("Rounds");
+                                    }
+
                                     Fight f = new Fight(firstName1, lastName1, firstName2, lastName2, preFightWins1,
-                                            preFightLosses1, preFightWins2, preFightLosses2, moneyLine1, moneyLine2);
+                                            preFightLosses1, preFightWins2, preFightLosses2, moneyLine1, moneyLine2, i);
                                     fightsList.add(f);
                                     Log.d("FightSelection", "Parsed fight: " + f.getFighters());
                                 } else {
                                     Log.e("FightSelection", "Error parsing JSON: Not enough fighters in fight " + i);
                                 }
                             }
-                            UFCEventAdapter adapter = new UFCEventAdapter(FightSelection.this, fightsList);
+                            adapter = new UFCEventAdapter(FightSelection.this, fightsList);
+                            adapter.setOnItemClickListener(FightSelection.this);
                             recyclerView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -109,6 +116,18 @@ public class FightSelection extends AppCompatActivity {
         requestQueue.add(jsonObjectRequest);
     }
 
+
+    @Override
+    public void onItemClick(Fight fight) {
+        Intent intent = new Intent(this, ScoringSystem.class);
+        intent.putExtra("fight", fight);
+        intent.putExtra("firstName1", fight.getFirstName());
+        intent.putExtra("lastName1", fight.getLastName());
+        intent.putExtra("firstName2", fight.getOpponentFirstName());
+        intent.putExtra("lastName2", fight.getOpponentLastName());
+        intent.putExtra("rounds", fight.getRounds());
+        startActivity(intent);
+    }
 }
 
 
