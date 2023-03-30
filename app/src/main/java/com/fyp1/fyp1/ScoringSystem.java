@@ -99,7 +99,7 @@ public class ScoringSystem extends AppCompatActivity {
 
         fighter1TextView = findViewById(R.id.fighter1_name);
         fighter2TextView = findViewById(R.id.fighter2_name);
-        TextView roundTextView = findViewById(R.id.roundsTextView);
+        TextView roundsTextView = findViewById(R.id.roundsTextView);
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -109,17 +109,18 @@ public class ScoringSystem extends AppCompatActivity {
             lastName2 = intent.getStringExtra("lastName2");
             rounds = intent.getStringExtra("rounds");
 
-            if (rounds != null) {
-                int numRounds = Integer.parseInt(rounds);
-                if (numRounds == 11) {
-                    roundTextView.setText("5 Rounds");
-                } else {
-                    roundTextView.setText("3 Rounds");
-                }
+            int numberOfRounds = fight.getRounds();
+
+            if (numberOfRounds == 5) {
+                roundsTextView.setText("5 rounds");
+            } else {
+                roundsTextView.setText("3 rounds");
             }
 
-            fighter1TextView.setText(firstName1 + " " + lastName1);
-            fighter2TextView.setText(firstName2 + " " + lastName2);
+
+            fighter1TextView.setText(firstName1 + "\n" + lastName1);
+            fighter2TextView.setText(firstName2 + "\n" + lastName2);
+
         }
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
@@ -197,6 +198,9 @@ public class ScoringSystem extends AppCompatActivity {
             public void onClick(View view) {
                 redheadCount++;
 
+                // Set the red strike score to the current value of the redheadCount variable
+                redStrikeScore.setText(String.valueOf(redheadCount));
+
                 // Initialize the Firebase Firestore
                 FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 
@@ -230,6 +234,7 @@ public class ScoringSystem extends AppCompatActivity {
                         });
             }
         });
+
 
 
         timerRunning = true;

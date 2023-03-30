@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/aldrich"
-                android:textColor="@color/black"
+                android:textColor="@color/red"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -39,7 +39,9 @@
                 android:textSize="20sp"
                 app:layout_constraintEnd_toStartOf="@+id/fighter2_name"
                 app:layout_constraintStart_toEndOf="@+id/fighter1_name"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/roundsTextView"
+                app:layout_constraintBottom_toBottomOf="@+id/roundsTextView"/>
+
 
 
             <TextView
@@ -47,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/aldrich"
-                android:textColor="@color/black"
+                android:textColor="@color/blue"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -60,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/aldrich"
-                android:text="5 rounds"
+                android:text="5"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
