@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/aldrich"
-                android:text="5"
+                android:text="5 Rounds"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -138,6 +138,8 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="40dp"
                 android:text="Head"
+                android:backgroundTint="@color/red"
+                app:layout_constraintBaseline_toBaselineOf="@+id/blueheadStrikes"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/redstrikesScore" />
 
@@ -148,6 +150,8 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
                 android:text="Body"
+                android:backgroundTint="@color/red"
+                app:layout_constraintBaseline_toBaselineOf="@+id/bluebodyStrikes"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/redheadStrikes" />
 
@@ -158,6 +162,8 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
                 android:text="Leg"
+                android:backgroundTint="@color/red"
+                app:layout_constraintBaseline_toBaselineOf="@+id/bluelegStrikes"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/redbodyStrikes" />
 
@@ -168,6 +174,8 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:text="Takedown"
+                android:backgroundTint="@color/red"
+                app:layout_constraintBaseline_toBaselineOf="@+id/blueTakedowns"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/redlegStrikes" />
 
@@ -178,6 +186,7 @@
                 android:layout_marginTop="35dp"
                 android:layout_marginEnd="16dp"
                 android:text="Head"
+                android:backgroundTint="@color/blue"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/bluestrikesScore" />
 
@@ -188,6 +197,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="16dp"
                 android:text="Body"
+                android:backgroundTint="@color/blue"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/blueheadStrikes" />
 
@@ -198,6 +208,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="16dp"
                 android:text="Leg"
+                android:backgroundTint="@color/blue"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/bluebodyStrikes" />
 
@@ -208,6 +219,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="16dp"
                 android:text="Takedown"
+                android:backgroundTint="@color/blue"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/bluelegStrikes" />
 
@@ -237,6 +249,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="Start"
+                android:backgroundTint="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/scoring_title" />
 
@@ -247,6 +260,7 @@
                 android:layout_marginEnd="16dp"
                 android:text="Reset"
                 android:visibility="invisible"
+                android:backgroundTint="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/scoring_title"
                 tools:visibility="visible" />
@@ -260,6 +274,7 @@
                 android:text="Next Round"
                 android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
+                android:backgroundTint="@color/black"
                 app:layout_constraintTop_toBottomOf="@+id/redTakedowns"
                 tools:visibility="visible" />
 

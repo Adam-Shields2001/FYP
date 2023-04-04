@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
@@ -36,6 +37,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -45,28 +47,17 @@ import java.util.Set;
 
 public class ScoringSystem extends AppCompatActivity {
 
-    Button redhead, redbody, redleg, redtakedown;
-    Button bluehead, bluebody, blueleg, bluetakedown;
-
-    private TextView roundTime;
+    private Button redhead, redbody, redleg, redtakedown, bluehead, bluebody, blueleg, bluetakedown;
     private Button buttonStartPause, buttonReset, nextRound;
     private CountDownTimer countDownTimer;
-    private boolean timerRunning;
+    private boolean timerRunning, roundStarted = false;
+    ;
     private long timeLeftInMillis;
-    private int numberOfUsers;
-
-    private TextView fighter1TextView;
-    private TextView fighter2TextView;
-
-    private int redheadCount, redbodyCount, redlegCount, redtakedownCount = 0;
-    private int blueheadCount, bluebodyCount, bluelegCount, bluetakedownCount = 0;
-
-    private TextView redStrikeScore, blueStrikeScore;
-
+    private TextView fighter1TextView,  fighter2TextView, redStrikeScore, blueStrikeScore, roundTime;
+    private int redheadCount, redbodyCount, redlegCount, redtakedownCount = 0, blueheadCount, bluebodyCount, bluelegCount, bluetakedownCount = 0;
     private long totalTimeInMilliseconds, startTime = -0, elapsedTimeInMillis, time = 0, strikeTime;
     float elapsedTimeInSeconds;
-    private int elapsedMinutes, elapsedSeconds, round = 1;
-
+    private int elapsedMinutes, elapsedSeconds, round, roundCounter = 1, numberOfUsers;
     private String firstName1, lastName1, firstName2, lastName2, rounds;
 
     @Override
@@ -92,8 +83,6 @@ public class ScoringSystem extends AppCompatActivity {
         buttonReset = (Button) findViewById(R.id.button_reset);
         nextRound = (Button) findViewById(R.id.button_nextRound);
 
-        //Fight fight = getIntent().getParcelableExtra("fight");
-
         Fight fight = (Fight) getIntent().getSerializableExtra("fight");
         int round = fight.getRounds();
 
@@ -112,7 +101,7 @@ public class ScoringSystem extends AppCompatActivity {
             int numberOfRounds = fight.getRounds();
 
             if (numberOfRounds == 5) {
-                roundsTextView.setText("5 rounds");
+                roundsTextView.setText("3 rounds");
             } else {
                 roundsTextView.setText("3 rounds");
             }
@@ -125,48 +114,54 @@ public class ScoringSystem extends AppCompatActivity {
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         CollectionReference usersCollection = firestore.collection("Users");
-        usersCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    numberOfUsers = task.getResult().size();
-                    Log.d("TAG", "Number of users: " + numberOfUsers);
-                } else {
-                    Log.d("TAG", "Error getting users: " + task.getException());
-                }
-            }
-        });
-
-        buttonStartPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (timerRunning) {
-                    pauseTimer();
-                } else {
-                    startTimer();
-                }
-            }
-        });
-
-        buttonReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                redheadCount =0;
-                resetTimer();
+        usersCollection.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                numberOfUsers = task.getResult().size();
+                Log.d("TAG", "Number of users: " + numberOfUsers);
+            } else {
+                Log.d("TAG", "Error getting users: " + task.getException());
             }
         });
 
         nextRound.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                round++;
-//                Intent intent = new Intent(ScoringSystem.this, ScoringSystem.class);
-//                startActivity(intent);
-                validateScores();
+                // Stop the current timer
+                countDownTimer.cancel();
+                timerRunning = false;
+
+                // Increment the round number
+                final int nextRoundCounter = roundCounter + 1;
+
+                Intent intent = new Intent(ScoringSystem.this, ScoringSystem.class);
+                intent.putExtra("fight", fight);
+                intent.putExtra("firstName1", firstName1);
+                intent.putExtra("lastName1", lastName1);
+                intent.putExtra("firstName2", firstName2);
+                intent.putExtra("lastName2", lastName2);
+                intent.putExtra("rounds", rounds);
+                intent.putExtra("round", round);
+                startActivity(intent);
+                finish();
             }
         });
 
+        startTimerAtTargetTime();
+
         updateCountDownText();
+    }
+
+    private void startTimerAtTargetTime() {
+        Calendar targetTime = Calendar.getInstance();
+        targetTime.set(Calendar.HOUR_OF_DAY, 17);
+        targetTime.set(Calendar.MINUTE, 18);
+        targetTime.set(Calendar.SECOND, 0);
+
+        Calendar now = Calendar.getInstance();
+
+        long remainingTimeInMillis = targetTime.getTimeInMillis() - now.getTimeInMillis();
+
+        new Handler().postDelayed(() -> startTimer(), remainingTimeInMillis);
     }
 
     private void startTimer() {
@@ -177,8 +172,6 @@ public class ScoringSystem extends AppCompatActivity {
                 updateCountDownText();
                 elapsedTimeInMillis = startTime + timeLeftInMillis;
                 elapsedTimeInSeconds = Math.round(elapsedTimeInMillis / 1000.0f);
-//                elapsedMinutes = (int) (elapsedTimeInSeconds / 60);
-//                elapsedSeconds = (int) (elapsedTimeInSeconds % 60);
             }
 
             @Override
@@ -235,25 +228,9 @@ public class ScoringSystem extends AppCompatActivity {
             }
         });
 
-
-
         timerRunning = true;
         buttonStartPause.setText("Pause");
         buttonReset.setVisibility(View.INVISIBLE);
-    }
-
-    private void pauseTimer() {
-        countDownTimer.cancel();
-        timerRunning = false;
-        buttonStartPause.setText("Start");
-        buttonReset.setVisibility(View.VISIBLE);
-    }
-
-    private void resetTimer() {
-        timeLeftInMillis = 300000;
-        updateCountDownText();
-        buttonReset.setVisibility(View.INVISIBLE);
-        buttonStartPause.setVisibility(View.VISIBLE);
     }
 
     private void updateCountDownText() {
@@ -293,29 +270,25 @@ public class ScoringSystem extends AppCompatActivity {
                     // Calculate the start and end times for the current 5-second interval
                     long startTimer = i * 1000;
                     long endTimer = (i - 5) * 1000;
-                    int currentInterval = i;
-                    Log.d(TAG, "Number of unique user IDs: " + uniqueUserIds.size());
 
                     // Query the strikes for all users within the timer duration
-                    Query query = strikesRef.whereGreaterThanOrEqualTo("elapsedTimeInSeconds", startTimer / 1000 / 60)
-                            .whereLessThanOrEqualTo("elapsedTimeInSeconds", endTimer / 1000 / 60);
+                    Query query = strikesRef.whereLessThanOrEqualTo("elapsedTimeInSeconds", startTimer / 1000)
+                            .whereGreaterThanOrEqualTo("elapsedTimeInSeconds", endTimer / 1000);
                     query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            Map<String, Integer> strikesCount = new HashMap<>();
-
                             // Loop through the strikes for all users and group them by user ID
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                String userId = document.getString("uid");
-                                // Increment the strikes counter for the current user
-                                int strikes;
-                                if (strikesCount.containsKey(userId)) {
-                                    strikes = strikesCount.get(userId);
-                                } else {
-                                    strikes = 0;
+                            Map<String, Integer> strikesCount = new HashMap<>();
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    String userId = document.getString("uid");
+                                    // Increment the strikes counter for the current user
+                                    int strikes = strikesCount.getOrDefault(userId, 0);
+                                    strikesCount.put(userId, strikes + 1);
                                 }
-                                strikesCount.put(userId, strikes + 1);
-                            }
+
+
+                            Log.d(TAG, "Number of documents returned by the query: " + task.getResult().size());
+                            Log.d(TAG, "Number of strikes: " + strikesCount);
 
                             // Calculate the number of scoring users in the interval
                             int scoringUsersCount = 0;
@@ -331,21 +304,24 @@ public class ScoringSystem extends AppCompatActivity {
                             // Delete strikes if percentage is less than 50
                             if (percentage < 50) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
-                                    document.getReference().delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.w(TAG, "Error deleting document", e);
-                                        }
-                                    });
+                                    String userId = document.getString("uid");
+                                    int strikes = strikesCount.getOrDefault(userId, 0);
+                                    if (strikes > 0) {
+                                        document.getReference().delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.w(TAG, "Error deleting document", e);
+                                            }
+                                        });
+                                    }
                                 }
                             } else {
-                                //Log.d(TAG, "Number of unique user IDs: " + uniqueUserIds.size());
-                                //Log.d(TAG, "Scores validated for interval " + currentInterval);
+
                             }
                         }
                     });
