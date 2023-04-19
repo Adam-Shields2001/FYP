@@ -3,21 +3,19 @@ package com.fyp1.fyp1.models;
 public class Strikes {
 
     private float elapsedTimeInSeconds;
-    private int headStrike, round;
+    private int round;
     private String fighterNames;
     private String uid;
 
     public Strikes() {
     }
 
-    public Strikes(float elapsedTimeInSeconds, int headStrike, int round, String fighterNames, String uid) {
+    public Strikes(float elapsedTimeInSeconds, int round, String fighterNames, String uid) {
         this.elapsedTimeInSeconds = elapsedTimeInSeconds;
-        this.headStrike = headStrike;
         this.round = round;
         this.fighterNames = fighterNames;
         this.uid = uid;
     }
-
 
     public String getUid() {
         return uid;
@@ -33,14 +31,6 @@ public class Strikes {
 
     public void setElapsedTimeInSeconds(float elapsedTimeInSeconds) {
         this.elapsedTimeInSeconds = elapsedTimeInSeconds;
-    }
-
-    public int getHeadStrike() {
-        return headStrike;
-    }
-
-    public void setHeadStrike(int headStrike) {
-        this.headStrike = headStrike;
     }
 
     public int getRound() {

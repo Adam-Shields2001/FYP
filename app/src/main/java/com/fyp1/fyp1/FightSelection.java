@@ -60,7 +60,7 @@ public class FightSelection extends AppCompatActivity implements UFCEventAdapter
     }
 
     private void getEvents() {
-        String url = "https://api.sportsdata.io/v3/mma/scores/json/Event/294?key=0f1ac9ba07694202970b5e87ebeb902b";
+        String url = "https://api.sportsdata.io/v3/mma/scores/json/Event/296?key=0f1ac9ba07694202970b5e87ebeb902b";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
