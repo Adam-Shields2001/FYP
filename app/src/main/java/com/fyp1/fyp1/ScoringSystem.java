@@ -374,30 +374,52 @@ public class ScoringSystem extends AppCompatActivity {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         CollectionReference validatedCollection = firestore.collection("Validated");
 
-        Task<QuerySnapshot> task = validatedCollection
-                .whereEqualTo("round", round)
-                .whereEqualTo("fighterNames", fightersNames)
-                .get();
+        // Create a set to keep track of the intervals for which a red strike has already been counted
+        Set<Integer> countedIntervals = new HashSet<>();
 
-        task.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
+        // Loop through 5-second intervals of the timer
+        for (int i = 300; i >= 0; i -= 5) {
+            // Calculate the start and end times for the current 5-second interval
+            long startTimer = i * 1000;
+            long endTimer = (i - 5) * 1000;
+
+            // Query the strikes for all users within the timer duration
+            Query query = validatedCollection.whereEqualTo("fighterNames", fightersNames)
+                    .whereEqualTo("round", roundCounter)
+                    .whereLessThanOrEqualTo("elapsedTimeInSeconds", startTimer / 1000)
+                    .whereGreaterThanOrEqualTo("elapsedTimeInSeconds", endTimer / 1000);
+            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     int redStrikesCount = 0;
                     int blueStrikesCount = 0;
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         if (document.contains("redStrike")) {
-                            redStrikesCount++;
-                        } else if (document.contains("blueStrike")) {
-                            blueStrikesCount++;
+                            // Get the interval for this document
+                            int redInterval = (int) Math.floor(document.getLong("elapsedTimeInSeconds") / 5);
+
+                            // Increment the red strike count for this interval if it hasn't been counted already
+                            if (!countedIntervals.contains(redInterval)) {
+                                redStrikesCount++;
+                                countedIntervals.add(redInterval);
+                            }
                         }
+                        if (document.contains("blueStrike")) {
+                            // Get the interval for this document
+                            int blueInterval = (int) Math.floor(document.getLong("elapsedTimeInSeconds") / 5);
+
+                            if (!countedIntervals.contains(blueInterval)) {
+                                blueStrikesCount++;
+                                countedIntervals.add(blueInterval);
+                            }
+                        }
+                        listener.onStrikesCountLoaded(redStrikesCount, blueStrikesCount);
                     }
-                    listener.onStrikesCountLoaded(redStrikesCount, blueStrikesCount);
-                } else {
-                    Log.d(TAG, "Error getting validated strikes: ", task.getException());
+                    Log.d(TAG, "Red strikes count for interval " + redStrikesCount);
+                    Log.d(TAG, "Blue strikes count for interval " + blueStrikesCount);
                 }
-            }
-        });
+            });
+        }
     }
 
 
