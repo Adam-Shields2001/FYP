@@ -29,13 +29,6 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".Results"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
             android:name=".ScoringSystem"
             android:exported="false">
             <meta-data

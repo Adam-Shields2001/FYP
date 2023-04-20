@@ -49,10 +49,9 @@ public class ScoringSystem extends AppCompatActivity {
     private int redStrike, blueStrike;
     private long startTime = -0, elapsedTimeInMillis, time = 0;
     float elapsedTimeInSeconds;
-    private int elapsedMinutes, elapsedSeconds, round, roundCounter = 1, numberOfUsers;
+    private int round, roundCounter = 1, numberOfUsers;
     private String firstName1, lastName1, firstName2, lastName2, rounds;
-    int redValidatedStrikes = 0, blueValidatedStrikes = 0, scoringUsersCount = 0;
-    float percentage = 0;
+    int redValidatedStrikes = 0, blueValidatedStrikes = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,7 +152,7 @@ public class ScoringSystem extends AppCompatActivity {
 
     private void startTimerAtTargetTime() {
         Calendar targetTime = Calendar.getInstance();
-        targetTime.set(Calendar.HOUR_OF_DAY, 12);
+        targetTime.set(Calendar.HOUR_OF_DAY, 9);
         targetTime.set(Calendar.MINUTE, 28);
         targetTime.set(Calendar.SECOND, 0);
 
@@ -178,8 +177,6 @@ public class ScoringSystem extends AppCompatActivity {
             public void onFinish() {
                 timerRunning = false;
                 nextRound.setVisibility(View.VISIBLE);
-//                Intent intent = new Intent(ScoringSystem.this, Results.class);
-//                startActivity(intent);
             }
         }.start();
 
@@ -315,11 +312,21 @@ public class ScoringSystem extends AppCompatActivity {
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             // Loop through the strikes for all users and group them by user ID
                             Map<String, Integer> strikesCount = new HashMap<>();
+                            int redStrikesCount = 0;
+                            int blueStrikesCount = 0;
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 String userId = document.getString("uid");
+                                boolean isRedStrike = document.contains("redStrike");
+                                boolean isBlueStrike = document.contains("blueStrike");
                                 // Increment the strikes counter for the current user
                                 int strikes = strikesCount.containsKey(userId) ? strikesCount.get(userId) : 0;
                                 strikesCount.put(userId, strikes + 1);
+                                if (isRedStrike) {
+                                    redStrikesCount++;
+                                }
+                                if (isBlueStrike) {
+                                    blueStrikesCount++;
+                                }
                             }
 
                             // Count the number of scoring users for the current interval
@@ -332,16 +339,33 @@ public class ScoringSystem extends AppCompatActivity {
 
                             // Calculate the percentage of scoring users
                             float percentage = ((float) intervalScoringUsersCount / (float) uniqueUserIds.size()) * 100;
+                            float red = ((float) redStrikesCount / (float) uniqueUserIds.size()) * 100;
+                            float blue = ((float) blueStrikesCount / (float) uniqueUserIds.size()) * 100;
 
-                            Log.d(TAG, "Scoring Users" + intervalScoringUsersCount);
-                            Log.d(TAG, "Total Users" + uniqueUserIds);
+                            Log.d(TAG, "Scoring Users " + intervalScoringUsersCount);
+                            Log.d(TAG, "Total Users " + uniqueUserIds);
+                            Log.d(TAG, "Red Strikes  " + redStrikesCount);
+                            Log.d(TAG, "Blue Strikes " + blueStrikesCount);
+
+                            int totalUsers = uniqueUserIds.size();
 
                             // Add the total strikes for each user to the "Fights" collection
-                            if (percentage > 50) {
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                            if (percentage > 50 && red > 50) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    boolean isRedStrike = document.contains("redStrike");
+                                    if (isRedStrike) {
                                         Map<String, Object> data = document.getData();
                                         validatedRef.document(document.getId()).set(data);
                                     }
+                                }
+                            } else if (percentage > 50 && blue > 50) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    boolean isBlueStrike = document.contains("blueStrike");
+                                    if (isBlueStrike) {
+                                        Map<String, Object> data = document.getData();
+                                        validatedRef.document(document.getId()).set(data);
+                                    }
+                                }
                             }
                         }
                     });

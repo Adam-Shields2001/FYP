@@ -33,7 +33,6 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-
         mAuth = FirebaseAuth.getInstance();
 
         alreadyHaveAccount = (TextView) findViewById(R.id.alreadyHaveaccount);
