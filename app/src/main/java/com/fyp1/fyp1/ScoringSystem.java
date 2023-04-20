@@ -116,9 +116,8 @@ public class ScoringSystem extends AppCompatActivity {
                 roundStarted = false;
                 updateCountDownText();
 
-                String fightName = lastName1 + " vs " + lastName2;
                 String fightersNames = firstName1 + " " + lastName1 + " vs " + firstName2 + " " + lastName2;
-                validateScores(fightName, roundCounter);
+                validateScores(fightersNames, roundCounter);
 
                 // Call the getValidatedStrikesCount method with the current round and fighter names, and a listener
                 getValidatedStrikesCount(roundCounter, fightersNames, new OnStrikesCountLoadedListener() {
@@ -268,7 +267,7 @@ public class ScoringSystem extends AppCompatActivity {
         roundTime.setText(timeLeftFormatted);
     }
 
-    private void validateScores(String fightName, int roundCounter) {
+    private void validateScores(String fightersNames, int roundCounter) {
 
         // update round variable
         this.roundCounter = roundCounter;
@@ -304,8 +303,10 @@ public class ScoringSystem extends AppCompatActivity {
                     redValidatedStrikes = 0;
                     blueValidatedStrikes = 0;
 
+                    Log.d(TAG, "Fighters: " + fightersNames);
+
                     // Query the strikes for all users within the timer duration
-                    Query query = strikesRef.whereEqualTo("round", roundCounter).whereLessThanOrEqualTo("elapsedTimeInSeconds", startTimer / 1000)
+                    Query query = strikesRef.whereEqualTo("fighterNames", fightersNames).whereEqualTo("round", roundCounter).whereLessThanOrEqualTo("elapsedTimeInSeconds", startTimer / 1000)
                             .whereGreaterThanOrEqualTo("elapsedTimeInSeconds", endTimer / 1000);
                     query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -341,11 +342,6 @@ public class ScoringSystem extends AppCompatActivity {
                             float percentage = ((float) intervalScoringUsersCount / (float) uniqueUserIds.size()) * 100;
                             float red = ((float) redStrikesCount / (float) uniqueUserIds.size()) * 100;
                             float blue = ((float) blueStrikesCount / (float) uniqueUserIds.size()) * 100;
-
-                            Log.d(TAG, "Scoring Users " + intervalScoringUsersCount);
-                            Log.d(TAG, "Total Users " + uniqueUserIds);
-                            Log.d(TAG, "Red Strikes  " + redStrikesCount);
-                            Log.d(TAG, "Blue Strikes " + blueStrikesCount);
 
                             int totalUsers = uniqueUserIds.size();
 
