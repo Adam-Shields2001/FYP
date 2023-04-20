@@ -305,7 +305,7 @@ public class ScoringSystem extends AppCompatActivity {
                     blueValidatedStrikes = 0;
 
                     // Query the strikes for all users within the timer duration
-                    Query query = strikesRef.whereLessThanOrEqualTo("elapsedTimeInSeconds", startTimer / 1000)
+                    Query query = strikesRef.whereEqualTo("round", roundCounter).whereLessThanOrEqualTo("elapsedTimeInSeconds", startTimer / 1000)
                             .whereGreaterThanOrEqualTo("elapsedTimeInSeconds", endTimer / 1000);
                     query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -358,7 +358,7 @@ public class ScoringSystem extends AppCompatActivity {
                                         validatedRef.document(document.getId()).set(data);
                                     }
                                 }
-                            } else if (percentage > 50 && blue > 50) {
+                            } if (percentage > 50 && blue > 50) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     boolean isBlueStrike = document.contains("blueStrike");
                                     if (isBlueStrike) {

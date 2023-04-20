@@ -29,6 +29,8 @@ public class Result extends AppCompatActivity {
     ArrayList<BarEntry> round2Data = new ArrayList<>();
     ArrayList<BarEntry> round3Data = new ArrayList<>();
 
+    String fightId = "Curtis Blaydes vs Sergei Pavlovich";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +46,6 @@ public class Result extends AppCompatActivity {
 
         // Assuming that you have a collection called "fights" in your database
         CollectionReference fightsRef = firestore.collection("Fights");
-        String fightId = "Edson Barboza vs Billy Quarantillo";
 
         // Query for the fight document with the given ID
         DocumentReference fightDocRef = fightsRef.document(fightId);
@@ -95,7 +96,6 @@ public class Result extends AppCompatActivity {
 
         // Assuming that you have a collection called "fights" in your database
         CollectionReference fightsRef = firestore.collection("Fights");
-        String fightId = "Edson Barboza vs Billy Quarantillo";
 
         // Query for the fight document with the given ID
         DocumentReference fightDocRef = fightsRef.document(fightId);
@@ -146,7 +146,6 @@ public class Result extends AppCompatActivity {
 
         // Assuming that you have a collection called "fights" in your database
         CollectionReference fightsRef = firestore.collection("Fights");
-        String fightId = "Edson Barboza vs Billy Quarantillo";
 
         // Query for the fight document with the given ID
         DocumentReference fightDocRef = fightsRef.document(fightId);
