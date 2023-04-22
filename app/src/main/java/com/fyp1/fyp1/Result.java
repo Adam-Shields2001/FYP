@@ -11,6 +11,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
@@ -82,6 +83,16 @@ public class Result extends AppCompatActivity {
                     XAxis xAxis = round1BarChart.getXAxis();
                     xAxis.setAxisMinimum(0f);
                     xAxis.setAxisMaximum(5f);
+                    leftAxis.setDrawLabels(true);
+                    leftAxis.setDrawAxisLine(false);
+                    leftAxis.setDrawGridLines(false);
+                    leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                    leftAxis.setValueFormatter(new ValueFormatter() {
+                        @Override
+                        public String getFormattedValue(float value) {
+                            return (int)value + " Strikes";
+                        }
+                    });
 
                     // Notify the chart that the data has changed
                     round1BarChart.notifyDataSetChanged();
@@ -132,6 +143,16 @@ public class Result extends AppCompatActivity {
                     XAxis xAxis = round2BarChart.getXAxis();
                     xAxis.setAxisMinimum(0f);
                     xAxis.setAxisMaximum(5f);
+                    leftAxis.setDrawLabels(true);
+                    leftAxis.setDrawAxisLine(false);
+                    leftAxis.setDrawGridLines(false);
+                    leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                    leftAxis.setValueFormatter(new ValueFormatter() {
+                        @Override
+                        public String getFormattedValue(float value) {
+                            return (int)value + " Strikes";
+                        }
+                    });
 
                     // Notify the chart that the data has changed
                     round2BarChart.notifyDataSetChanged();
@@ -182,6 +203,16 @@ public class Result extends AppCompatActivity {
                     XAxis xAxis = round3BarChart.getXAxis();
                     xAxis.setAxisMinimum(0f);
                     xAxis.setAxisMaximum(5f);
+                    leftAxis.setDrawLabels(true);
+                    leftAxis.setDrawAxisLine(false);
+                    leftAxis.setDrawGridLines(false);
+                    leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+                    leftAxis.setValueFormatter(new ValueFormatter() {
+                        @Override
+                        public String getFormattedValue(float value) {
+                            return (int)value + " Strikes";
+                        }
+                    });
 
                     // Notify the chart that the data has changed
                     round3BarChart.notifyDataSetChanged();
