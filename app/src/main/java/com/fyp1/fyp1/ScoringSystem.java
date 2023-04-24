@@ -34,13 +34,16 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.model.Document;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ScoringSystem extends AppCompatActivity {
 
@@ -79,14 +82,6 @@ public class ScoringSystem extends AppCompatActivity {
         roundNumberTextView = findViewById(R.id.roundNumberTextView);
         displayResultsButton = findViewById(R.id.button_displayResults);
 
-        displayResultsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ScoringSystem.this, Result.class);
-                startActivity(intent);
-            }
-        });
-
         Intent intent = getIntent();
         if (intent != null) {
             firstName1 = intent.getStringExtra("firstName1");
@@ -111,6 +106,38 @@ public class ScoringSystem extends AppCompatActivity {
             }
         });
 
+        String fightersNames = firstName1 + " " + lastName1 + " vs " + firstName2 + " " + lastName2;
+
+        CollectionReference fightsCollection = firestore.collection("Fights");
+
+        // Create a new document for the current fight
+        DocumentReference df = fightsCollection.document(fightersNames);
+
+        df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (!documentSnapshot.exists()) {
+                    // Set the initial values for the document
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("Red - Round 1", 0);
+                    data.put("Blue - Round 1", 0);
+                    data.put("Red - Round 2", 0);
+                    data.put("Blue - Round 2", 0);
+                    data.put("Red - Round 3", 0);
+                    data.put("Blue - Round 3", 0);
+                    df.set(data);
+                }
+            }
+        });
+
+        displayResultsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ScoringSystem.this, Result.class);
+                startActivity(intent);
+            }
+        });
+
         nextRound.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,19 +147,7 @@ public class ScoringSystem extends AppCompatActivity {
                 roundStarted = false;
                 updateCountDownText();
 
-                String fightersNames = firstName1 + " " + lastName1 + " vs " + firstName2 + " " + lastName2;
                 validateScores(fightersNames, roundCounter);
-
-                // Call the getValidatedStrikesCount method with the current round and fighter names, and a listener
-//                getValidatedStrikesCount(roundCounter, fightersNames, new OnStrikesCountLoadedListener() {
-//                    @Override
-//                    public void onStrikesCountLoaded(int redStrikesCount, int blueStrikesCount) {
-//                        Log.d(TAG, "Red Strikes Count: " + redStrikesCount);
-//                        Log.d(TAG, "Blue Strikes Count: " + blueStrikesCount);
-//                        addStrikeCountsToFights(roundCounter, fightersNames, redStrikesCount, blueStrikesCount);
-//                    }
-//                });
-                getValidatedStrikesCount(roundCounter, fightersNames);
 
                 // Increment the round number
                 roundCounter++;
@@ -282,6 +297,7 @@ public class ScoringSystem extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference strikesRef = db.collection("Strikes");
         CollectionReference validatedRef = db.collection("Validated");
+        CollectionReference fightsCollection = db.collection("Fights");
 
         // Query all the documents in the collection
         strikesRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -307,8 +323,6 @@ public class ScoringSystem extends AppCompatActivity {
                     // Reset the validated strikes counters for the current round
                     redValidatedStrikes = 0;
                     blueValidatedStrikes = 0;
-
-                    Log.d(TAG, "Fighters: " + fightersNames);
 
                     // Query the strikes for all users within the timer duration
                     Query query = strikesRef.whereEqualTo("fighterNames", fightersNames).whereEqualTo("round", roundCounter).whereLessThanOrEqualTo("elapsedTimeInSeconds", startTimer / 1000)
@@ -348,8 +362,6 @@ public class ScoringSystem extends AppCompatActivity {
                             float red = ((float) redStrikesCount / (float) uniqueUserIds.size()) * 100;
                             float blue = ((float) blueStrikesCount / (float) uniqueUserIds.size()) * 100;
 
-                            int totalUsers = uniqueUserIds.size();
-
                             // Add the total strikes for each user to the "Fights" collection
                             if (percentage > 50 && red > 50) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
@@ -373,51 +385,40 @@ public class ScoringSystem extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    public void getValidatedStrikesCount(int roundCounter, String fightersNames) {
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        CollectionReference validatedCollection = firestore.collection("Validated");
-        CollectionReference fightsCollection = firestore.collection("Fights");
 
         // Create a new document for the current fight
         DocumentReference df = fightsCollection.document(fightersNames);
 
-        df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (!documentSnapshot.exists()) {
-                    // Set the initial values for the document
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("Red - Round 1", 0);
-                    data.put("Blue - Round 1", 0);
-                    data.put("Red - Round 2", 0);
-                    data.put("Blue - Round 2", 0);
-                    data.put("Red - Round 3", 0);
-                    data.put("Blue - Round 3", 0);
-                    df.set(data);
-                }
-            }
-        });
+        AtomicBoolean allValidated = new AtomicBoolean(true);
+        for (int k = 300; k >= 0; k -= 5) {
+            long start = k == 300 ? (k * 1000) - 1000 : k * 1000;
+            long end = (k - 5) * 1000;
 
-        // Loop through 5-second intervals of the timer
-        for (int i = 300; i >= 0; i -= 5) {
-            // Calculate the start and end times for the current 5-second interval
-            long startTimer = i == 300 ? (i * 1000) - 1000 : i * 1000;
-            long endTimer = (i - 5) * 1000;
-
-            // Query the strikes for all users within the timer duration
-            Query query = validatedCollection.whereEqualTo("fighterNames", fightersNames)
+            Query validatedQuery = validatedRef.whereEqualTo("fighterNames", fightersNames)
                     .whereEqualTo("round", roundCounter)
-                    .whereLessThanOrEqualTo("elapsedTimeInSeconds", startTimer / 1000)
-                    .whereGreaterThanOrEqualTo("elapsedTimeInSeconds", endTimer / 1000);
-            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    .whereLessThanOrEqualTo("elapsedTimeInSeconds", start / 1000)
+                    .whereGreaterThanOrEqualTo("elapsedTimeInSeconds", end / 1000);
+            validatedQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        if (task.getResult().isEmpty()) {
+                            allValidated.set(false);
+                        }
+                    }
+                }
+            });
+        }
+
+        if (allValidated.get()) {
+            // Update the appropriate fields in the "Fights" collection based on the validated strikes
+            Query validatedQuery = validatedRef.whereEqualTo("fighterNames", fightersNames)
+                    .whereEqualTo("round", roundCounter);
+            validatedQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         if (document.contains("redStrike")) {
-                            Log.d(TAG, "Current round: " + roundCounter);
-
                             // Update the appropriate field in the "Fights" collection based on the value of the "round" field in the document
                             if (document.getLong("round") == 1) {
                                 df.update("Red - Round 1", FieldValue.increment(1));
@@ -426,10 +427,8 @@ public class ScoringSystem extends AppCompatActivity {
                             } else if (document.getLong("round") == 3) {
                                 df.update("Red - Round 3", FieldValue.increment(1));
                             }
-
                         }
                         if (document.contains("blueStrike")) {
-
                             // Update the appropriate field in the "Fights" collection based on the value of the "round" field in the document
                             if (document.getLong("round") == 1) {
                                 df.update("Blue - Round 1", FieldValue.increment(1));
@@ -438,31 +437,28 @@ public class ScoringSystem extends AppCompatActivity {
                             } else if (document.getLong("round") == 3) {
                                 df.update("Blue - Round 3", FieldValue.increment(1));
                             }
-
                         }
+                        // Delete the validated strike document
+                        validatedRef.document(document.getId()).delete();
                     }
                 }
             });
         }
     }
 
-//    public void getValidatedStrikesCount(int roundCounter, String fightersNames, OnStrikesCountLoadedListener listener) {
+//    public void getValidatedStrikesCount(int roundCounter, String fightersNames) {
 //        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 //        CollectionReference validatedCollection = firestore.collection("Validated");
+//        CollectionReference fightsCollection = firestore.collection("Fights");
 //
-//        // Create a set to keep track of the intervals for which a red strike has already been counted
-//        Set<Integer> countedIntervals = new HashSet<>();
-//
-//        // Create variables to store the total red and blue strikes counts
-//        int[] round1Red = new int[61];
-//        int totalBlueStrikesCount = 0;
+//        // Create a new document for the current fight
+//        DocumentReference df = fightsCollection.document(fightersNames);
 //
 //        // Loop through 5-second intervals of the timer
 //        for (int i = 300; i >= 0; i -= 5) {
 //            // Calculate the start and end times for the current 5-second interval
 //            long startTimer = i == 300 ? (i * 1000) - 1000 : i * 1000;
 //            long endTimer = (i - 5) * 1000;
-//            final int interval = i;
 //
 //            // Query the strikes for all users within the timer duration
 //            Query query = validatedCollection.whereEqualTo("fighterNames", fightersNames)
@@ -472,89 +468,35 @@ public class ScoringSystem extends AppCompatActivity {
 //            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 //                @Override
 //                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                    int redStrikesCount = 0;
-//                    int blueStrikesCount = 0;
 //                    for (QueryDocumentSnapshot document : task.getResult()) {
 //                        if (document.contains("redStrike")) {
-//                            // Get the interval for this document
-//                            int redInterval = (int) Math.floor(document.getLong("elapsedTimeInSeconds") / 5);
 //
-//                            // Increment the red strike count for this interval if it hasn't been counted already
-//                            if (!countedIntervals.contains(redInterval)&& document.getLong("round") == roundCounter) {
-//                                redStrikesCount++;
-//                                round1Red[redInterval]++;
-//                                countedIntervals.add(redInterval);
+//                            // Update the appropriate field in the "Fights" collection based on the value of the "round" field in the document
+//                            if (document.getLong("round") == 1) {
+//                                df.update("Red - Round 1", FieldValue.increment(1));
+//                            } else if (document.getLong("round") == 2) {
+//                                df.update("Red - Round 2", FieldValue.increment(1));
+//                            } else if (document.getLong("round") == 3) {
+//                                df.update("Red - Round 3", FieldValue.increment(1));
 //                            }
-//                            Log.d(TAG, "Red interval " + redInterval);
+//
 //                        }
-//                        if (document.contains("blueStrike")&& document.getLong("round") == roundCounter) {
-//                            // Get the interval for this document
-//                            int blueInterval = (int) Math.floor(document.getLong("elapsedTimeInSeconds") / 5);
+//                        if (document.contains("blueStrike")) {
 //
-//                            if (!countedIntervals.contains(blueInterval)) {
-//                                blueStrikesCount++;
-//                                countedIntervals.add(blueInterval);
+//                            // Update the appropriate field in the "Fights" collection based on the value of the "round" field in the document
+//                            if (document.getLong("round") == 1) {
+//                                df.update("Blue - Round 1", FieldValue.increment(1));
+//                            } else if (document.getLong("round") == 2) {
+//                                df.update("Blue - Round 2", FieldValue.increment(1));
+//                            } else if (document.getLong("round") == 3) {
+//                                df.update("Blue - Round 3", FieldValue.increment(1));
 //                            }
+//
 //                        }
 //                    }
-//                    addStrikeCountsToFights(roundCounter, fightersNames, redStrikesCount, blueStrikesCount);
-//                    //listener.onStrikesCountLoaded(redStrikesCount, blueStrikesCount);
-//                    Log.d(TAG, "Red strikes count for interval " + (interval) + "Round " + roundCounter + ": "  + redStrikesCount);
-//                    Log.d(TAG, "Blue strikes count for interval " + (interval) + "Round " + roundCounter + ": "  + blueStrikesCount);
-//                    Log.d(TAG, "Round 1 Total - " + Arrays.toString(round1Red));
-//
-//                    // Clear the set after each iteration of the loop
-//                    countedIntervals.clear();
 //                }
 //            });
 //        }
 //    }
-//
-//    private void addStrikeCountsToFights(int roundCounter, String fightersNames, int redStrikesCount, int blueStrikesCount) {
-//        // Initialize the Firebase Firestore and create a new collection called "Fights"
-//        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-//        CollectionReference fightsCollection = firestore.collection("Fights");
-//
-//        // Create a new document for the current fight
-//        DocumentReference df = fightsCollection.document(fightersNames);
-//
-//        df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-//            @Override
-//            public void onSuccess(DocumentSnapshot documentSnapshot) {
-//                if (!documentSnapshot.exists()) {
-//                    // Set the initial values for the document
-//                    Map<String, Object> data = new HashMap<>();
-//                    data.put("Red - Round 1", 0);
-//                    data.put("Blue - Round 1", 0);
-//                    data.put("Red - Round 2", 0);
-//                    data.put("Blue - Round 2", 0);
-//                    data.put("Red - Round 3", 0);
-//                    data.put("Blue - Round 3", 0);
-//                    df.set(data);
-//                }
-//            }
-//        });
-//
-//
-//        // Update the red and blue strike counts for the current round in the "Fights" collection
-//        switch (roundCounter) {
-//            case 2:
-//                df.update("Red - Round 1", redStrikesCount);
-//                df.update("Blue - Round 1", blueStrikesCount);
-//                break;
-//            case 3:
-//                df.update("Red - Round 2", redStrikesCount);
-//                df.update("Blue - Round 2", blueStrikesCount);
-//                break;
-//            case 4:
-//                df.update("Red - Round 3", redStrikesCount);
-//                df.update("Blue - Round 3", blueStrikesCount);
-//                break;
-//        }
-//    }
-
-    public interface OnStrikesCountLoadedListener {
-        void onStrikesCountLoaded(int redStrikesCount, int blueStrikesCount);
-    }
 
 }
