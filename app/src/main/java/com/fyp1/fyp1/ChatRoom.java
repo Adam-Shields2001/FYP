@@ -20,6 +20,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ public class ChatRoom extends AppCompatActivity {
     private EditText editTextMessage;
     private Button buttonSend;
     private RecyclerView recyclerView;
+    private String userName;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -60,12 +62,38 @@ public class ChatRoom extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(messageAdapter);
 
+        // Get the ID of the currently signed in user
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        String userId = auth.getCurrentUser().getUid();
+
+        // Get a reference to the user's name in the Realtime Database
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("name");
+
+        // Attach a listener to the reference to read the user's name
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    userName = snapshot.getValue(String.class);
+                    // Display the user's name
+                    Toast.makeText(ChatRoom.this, "Signed in as " + userName, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle the error
+            }
+        });
+
+
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String messageText = editTextMessage.getText().toString();
                 if (!messageText.isEmpty()) {
-                    Message message = new Message(firebaseUser.getUid(), messageText);
+                    //Message message = new Message(firebaseUser.getUid(), messageText);
+                    Message message = new Message(firebaseUser.getUid(), messageText, userName);
                     databaseReference.push().setValue(message);
                     editTextMessage.setText("");
                 } else {
