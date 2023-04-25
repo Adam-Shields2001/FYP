@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.fyp1.fyp1.ChatRoom;
 import com.fyp1.fyp1.FightSelection;
 import com.fyp1.fyp1.Login;
 import com.fyp1.fyp1.Predictions;
@@ -66,7 +67,7 @@ public class Menu extends AppCompatActivity {
                 } else if (id == R.id.nav_events) {
                     startActivity(new Intent(Menu.this, ViewEvents.class));
                 }else if (id == R.id.nav_share) {
-                    startActivity(new Intent(Menu.this, User.class));
+                    startActivity(new Intent(Menu.this, ChatRoom.class));
                 } else if (id == R.id.nav_settings) {
                     startActivity(new Intent(Menu.this, Settings.class));
                 } else if (id == R.id.nav_logout) {
