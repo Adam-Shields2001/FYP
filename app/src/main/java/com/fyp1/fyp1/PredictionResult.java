@@ -5,11 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.fyp1.fyp1.models.PredictionsModel;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -30,6 +33,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PredictionResult extends AppCompatActivity {
@@ -82,19 +86,28 @@ public class PredictionResult extends AppCompatActivity {
                                 decisionCount++;
                             }
 
-                            if (prediction.getRound().equals("Round 1")) {
+                            if (prediction.getRound().equals("1")) {
                                 round1Count++;
-                            } else if (prediction.getRound().equals("Round 2")) {
+                            } else if (prediction.getRound().equals("2")) {
                                 round2Count++;
-                            } else if (prediction.getRound().equals("Round 3")) {
+                            } else if (prediction.getRound().equals("3")) {
                                 round3Count++;
                             }
                         }
 
+                        // Create custom legend entries for each fighter
+                        LegendEntry sterlingEntry = new LegendEntry();
+                        sterlingEntry.label = "Sterling";
+                        sterlingEntry.formColor = Color.BLUE;
+
+                        LegendEntry cejudoEntry = new LegendEntry();
+                        cejudoEntry.label = "Cejudo";
+                        cejudoEntry.formColor = Color.RED;
+
                         // Create a PieEntry list for each fighter
                         List<PieEntry> fighterEntries = new ArrayList<>();
-                        fighterEntries.add(new PieEntry(sterlingCount, "Sterling"));
-                        fighterEntries.add(new PieEntry(cejudoCount, "Cejudo"));
+                        fighterEntries.add(new PieEntry(sterlingCount, "", sterlingEntry));
+                        fighterEntries.add(new PieEntry(cejudoCount, "", cejudoEntry));
 
                         // Create a PieDataSet for the fighters
                         PieDataSet fighterDataSet = new PieDataSet(fighterEntries, "");
@@ -110,7 +123,21 @@ public class PredictionResult extends AppCompatActivity {
                         mFighterChart.setData(fighterData);
 
                         // Set the description text for the PieChart
-                        mFighterChart.getDescription().setText("Number of users who selected each fighter");
+                        mFighterChart.getDescription().setText("");
+
+                        // Create a custom legend
+                        Legend customLegend = mFighterChart.getLegend();
+                        customLegend.setCustom(Arrays.asList(sterlingEntry, cejudoEntry));
+                        customLegend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+                        customLegend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+                        customLegend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+                        customLegend.setDrawInside(false);
+                        customLegend.setWordWrapEnabled(true);
+                        customLegend.setXEntrySpace(50f);
+
+                        // Set the hole radius for the PieChart
+                        mFighterChart.setHoleRadius(40f);
+                        mFighterChart.setTransparentCircleRadius(45f);
 
                         // Refresh the PieChart
                         mFighterChart.invalidate();
@@ -140,7 +167,7 @@ public class PredictionResult extends AppCompatActivity {
                         mMethodChart.setData(methodData);
 
                         // Set the description text for the BarChart
-                        mMethodChart.getDescription().setText("Number of users who selected each method of victory");
+                        mMethodChart.getDescription().setText("");
 
                         // Set the x-axis labels for the BarChart
                         final String[] xLabels = new String[]{"Knockout", "Submission", "Decision"};
@@ -167,6 +194,14 @@ public class PredictionResult extends AppCompatActivity {
                         // Disable the right y-axis
                         mMethodChart.getAxisRight().setEnabled(false);
 
+                        // Set the legend for the BarChart
+                        Legend methodLegend = mMethodChart.getLegend();
+                        methodLegend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+                        methodLegend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+                        methodLegend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+                        methodLegend.setDrawInside(false);
+                        methodLegend.setWordWrapEnabled(true);
+
                         // Refresh the BarChart
                         mMethodChart.invalidate();
 
@@ -176,11 +211,11 @@ public class PredictionResult extends AppCompatActivity {
                         roundEntries.add(new BarEntry(1, round2Count));
                         roundEntries.add(new BarEntry(2, round3Count));
 
-                        // Create a BarDataSet for the methods of victory
-                        BarDataSet roundDataSet = new BarDataSet(methodEntries, "Rounds");
-                        methodDataSet.setColors(Color.GREEN, Color.YELLOW, Color.GRAY);
-                        methodDataSet.setBarBorderColor(Color.BLACK);
-                        methodDataSet.setBarBorderWidth(1f);
+                        // Create a BarDataSet for the rounds
+                        BarDataSet roundDataSet = new BarDataSet(roundEntries, "Rounds");
+                        roundDataSet.setColors(Color.GREEN, Color.YELLOW, Color.GRAY);
+                        roundDataSet.setBarBorderColor(Color.BLACK);
+                        roundDataSet.setBarBorderWidth(1f);
 
                         // Set the value format for the BarData object to whole numbers
                         BarData roundData = new BarData(roundDataSet);
@@ -195,13 +230,40 @@ public class PredictionResult extends AppCompatActivity {
                         mRoundChart.setData(roundData);
 
                         // Set the description text for the BarChart
-                        mRoundChart.getDescription().setText("Number of users who selected each round");
+                        mRoundChart.getDescription().setText("");
 
                         // Set the x-axis labels for the BarChart
                         final String[] roundLabels = new String[]{"Round 1", "Round 2", "Round 3"};
                         XAxis roundXAxis = mRoundChart.getXAxis();
                         roundXAxis.setValueFormatter(new IndexAxisValueFormatter(roundLabels));
                         roundXAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                        roundXAxis.setDrawGridLines(false);
+                        roundXAxis.setDrawAxisLine(true);
+                        roundXAxis.setGranularity(1f);
+                        roundXAxis.setLabelCount(roundLabels.length);
+
+                        // Set the y-axis labels for the BarChart
+                        YAxis roundYAxis = mRoundChart.getAxisLeft();
+                        roundYAxis.setValueFormatter(new ValueFormatter() {
+                            @Override
+                            public String getFormattedValue(float value) {
+                                return String.valueOf((int) value);
+                            }
+                        });
+                        roundYAxis.setDrawGridLines(false);
+                        roundYAxis.setGranularity(1f);
+                        roundYAxis.setAxisMinimum(0f);
+
+                        // Disable the right y-axis
+                        mRoundChart.getAxisRight().setEnabled(false);
+
+                        // Set the legend for the BarChart
+                        Legend roundLegend = mRoundChart.getLegend();
+                        roundLegend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+                        roundLegend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+                        roundLegend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+                        roundLegend.setDrawInside(false);
+                        roundLegend.setWordWrapEnabled(true);
 
                         // Refresh the BarChart
                         mRoundChart.invalidate();
