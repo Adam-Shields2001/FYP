@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg3"
-    tools:context=".menu.MainMenu">
+    tools:context=".menu.">
 
     <View
         android:layout_width="match_parent"
@@ -48,7 +48,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:text="@string/app_name"
+                    android:text="CombatCounter"
                     android:textColor="@color/white"
                     android:textSize="18sp"
                     android:textStyle="bold"/>
