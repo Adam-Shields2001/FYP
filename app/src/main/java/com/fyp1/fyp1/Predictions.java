@@ -47,7 +47,7 @@ public class Predictions extends AppCompatActivity {
 
     private void fetchFights() {
 
-        String url = "https://api.sportsdata.io/v3/mma/scores/json/Event/285?key=0f1ac9ba07694202970b5e87ebeb902b";
+        String url = "https://api.sportsdata.io/v3/mma/scores/json/Event/297?key=0f1ac9ba07694202970b5e87ebeb902b";
 
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
@@ -67,16 +67,15 @@ public class Predictions extends AppCompatActivity {
                                 Double noContests = jsonObject.getDouble("PreFightNoContests");
                                 Double moneyline = jsonObject.getDouble("Moneyline");
 
-                                //FightModel fm = new FightModel(shortName, name, firstName, lastName, wins, losses, draws, noContests, moneyline);
-                                //fightList.add(fm);
+                                FightModel fm = new FightModel(shortName, name, firstName, lastName, wins, losses, draws, noContests, moneyline);
+                                fightList.add(fm);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-
-                            FightAdapter adapter = new FightAdapter(Predictions.this , fightList);
-
-                            recyclerView.setAdapter(adapter);
                         }
+
+                        FightAdapter adapter = new FightAdapter(Predictions.this , fightList);
+                        recyclerView.setAdapter(adapter);
                     }
                 }, new Response.ErrorListener() {
             @Override

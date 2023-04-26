@@ -13,6 +13,7 @@ import android.view.View;
 import com.fyp1.fyp1.ChatRoom;
 import com.fyp1.fyp1.FightSelection;
 import com.fyp1.fyp1.Login;
+import com.fyp1.fyp1.PredictionDetails;
 import com.fyp1.fyp1.Predictions;
 import com.fyp1.fyp1.R;
 import com.fyp1.fyp1.ScoringSystem;
@@ -61,7 +62,7 @@ public class Menu extends AppCompatActivity {
                 } else if (id == R.id.nav_scoring) {
                     startActivity(new Intent(Menu.this, FightSelection.class));
                 } else if (id == R.id.nav_predictions) {
-                    startActivity(new Intent(Menu.this, Predictions.class));
+                    startActivity(new Intent(Menu.this, PredictionDetails.class));
                 } else if (id == R.id.nav_fighters) {
                     startActivity(new Intent(Menu.this, ViewFighters.class));
                 } else if (id == R.id.nav_events) {

@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -16,7 +20,7 @@
             android:id="@+id/event_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="UFC 283: Teixeira vs Hill"
+            android:text="UFC 288: Sterling vs Cejudo"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -25,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/event_name"
-            android:text="January 21, 2023"
+            android:text="May 7, 2023"
             android:textSize="14sp" />
 
         <TextView
@@ -33,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/event_date"
-            android:text="Jeunesse Arena, Rio de Janeiro, Brazil"
+            android:text="Prudential Center, Newark, New Jersey, United States"
             android:textSize="14sp" />
 
     </RelativeLayout>
@@ -60,13 +64,13 @@
                     android:id="@+id/fighter1_image"
                     android:layout_width="wrap_content"
                     android:layout_height="198dp"
-                    android:src="@drawable/glover1" />
+                    android:src="@drawable/aljo" />
 
                 <TextView
                     android:id="@+id/fighter1_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Glover Teixeira"
+                    android:text="Aljamain Sterling"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -74,7 +78,7 @@
                     android:id="@+id/fighter1_record"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="33-9-0"
+                    android:text="22-3-0"
                     android:textSize="14sp" />
 
             </LinearLayout>
@@ -97,13 +101,13 @@
                     android:id="@+id/fighter2_image"
                     android:layout_width="wrap_content"
                     android:layout_height="198dp"
-                    android:src="@drawable/hill" />
+                    android:src="@drawable/cejudo" />
 
                 <TextView
                     android:id="@+id/fighter2_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Jamahal Hill"
+                    android:text="Henry Cejudo"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -111,7 +115,7 @@
                     android:id="@+id/fighter2_record"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="12-1-0"
+                    android:text="16-2-0"
                     android:textSize="14sp" />
 
             </LinearLayout>
@@ -186,4 +190,18 @@
 
     </LinearLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <Button
+            android:id="@+id/submit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Submit"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
 </LinearLayout>
+</ScrollView>

@@ -47,7 +47,7 @@ public class UFC_Prediction extends AppCompatActivity {
     }
 
     private void fetchEvent() {
-        String url = "https://api.sportsdata.io/v3/mma/scores/json/Event/285?key=0f1ac9ba07694202970b5e87ebeb902b";
+        String url = "https://api.sportsdata.io/v3/mma/scores/json/Event/297?key=0f1ac9ba07694202970b5e87ebeb902b";
 
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
