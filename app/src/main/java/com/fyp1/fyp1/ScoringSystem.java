@@ -147,9 +147,11 @@ public class ScoringSystem extends AppCompatActivity {
                 roundStarted = false;
                 updateCountDownText();
 
-                validateScores(fightersNames, roundCounter);
-
-                getValidatedStrikesCount(roundCounter, fightersNames);
+                validateScores(fightersNames, roundCounter, new Runnable() {
+                    @Override
+                    public void run() {
+                    }
+                });
 
                 // Increment the round number
                 roundCounter++;
@@ -289,7 +291,7 @@ public class ScoringSystem extends AppCompatActivity {
         roundTime.setText(timeLeftFormatted);
     }
 
-    private void validateScores(String fightersNames, int roundCounter) {
+    private void validateScores(String fightersNames, int roundCounter, Runnable callback) {
 
         // update round variable
         this.roundCounter = roundCounter;
@@ -385,6 +387,11 @@ public class ScoringSystem extends AppCompatActivity {
                         }
                     });
                 }
+                // Call the callback.run() here, before calling getValidatedStrikesCount()
+                callback.run();
+
+                // Call getValidatedStrikesCount() after the "Validated" collection has been updated
+                getValidatedStrikesCount(roundCounter, fightersNames);
             }
         });
     }
