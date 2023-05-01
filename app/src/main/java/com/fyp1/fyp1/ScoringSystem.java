@@ -56,7 +56,7 @@ public class ScoringSystem extends AppCompatActivity {
     private int redStrike, blueStrike;
     private long startTime = -0, elapsedTimeInMillis, time = 0;
     float elapsedTimeInSeconds;
-    private int round, roundCounter = 1, numberOfUsers;
+    private int round = 1, roundCounter = 1, numberOfUsers;
     private String firstName1, lastName1, firstName2, lastName2, rounds;
     int redValidatedStrikes = 0, blueValidatedStrikes = 0;
 
@@ -149,6 +149,8 @@ public class ScoringSystem extends AppCompatActivity {
 
                 validateScores(fightersNames, roundCounter);
 
+                getValidatedStrikesCount(roundCounter, fightersNames);
+
                 // Increment the round number
                 roundCounter++;
 
@@ -171,7 +173,7 @@ public class ScoringSystem extends AppCompatActivity {
 
     private void startTimerAtTargetTime() {
         Calendar targetTime = Calendar.getInstance();
-        targetTime.set(Calendar.HOUR_OF_DAY, 1);
+        targetTime.set(Calendar.HOUR_OF_DAY, 00);
         targetTime.set(Calendar.MINUTE, 00);
         targetTime.set(Calendar.SECOND, 0);
 
@@ -183,7 +185,7 @@ public class ScoringSystem extends AppCompatActivity {
     }
 
     private void startTimer() {
-        countDownTimer = new CountDownTimer(5000, 1000) {
+        countDownTimer = new CountDownTimer(1000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 timeLeftInMillis = millisUntilFinished;
@@ -363,7 +365,7 @@ public class ScoringSystem extends AppCompatActivity {
                             float blue = ((float) blueStrikesCount / (float) uniqueUserIds.size()) * 100;
 
                             // Add the total strikes for each user to the "Fights" collection
-                            if (percentage > 50 && red > 50) {
+                            if (percentage >= 50 && red >= 50) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     boolean isRedStrike = document.contains("redStrike");
                                     if (isRedStrike) {
@@ -371,7 +373,7 @@ public class ScoringSystem extends AppCompatActivity {
                                         validatedRef.document(document.getId()).set(data);
                                     }
                                 }
-                            } if (percentage > 50 && blue > 50) {
+                            } if (percentage >= 50 && blue >= 50) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     boolean isBlueStrike = document.contains("blueStrike");
                                     if (isBlueStrike) {
@@ -385,40 +387,33 @@ public class ScoringSystem extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void getValidatedStrikesCount(int roundCounter, String fightersNames) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        CollectionReference validatedCollection = firestore.collection("Validated");
+        CollectionReference fightsCollection = firestore.collection("Fights");
 
         // Create a new document for the current fight
         DocumentReference df = fightsCollection.document(fightersNames);
 
-        AtomicBoolean allValidated = new AtomicBoolean(true);
-        for (int k = 300; k >= 0; k -= 5) {
-            long start = k == 300 ? (k * 1000) - 1000 : k * 1000;
-            long end = (k - 5) * 1000;
+        // Loop through 5-second intervals of the timer
+        for (int i = 300; i >= 0; i -= 5) {
+            // Calculate the start and end times for the current 5-second interval
+            long startTimer = i == 300 ? (i * 1000) - 1000 : i * 1000;
+            long endTimer = (i - 5) * 1000;
 
-            Query validatedQuery = validatedRef.whereEqualTo("fighterNames", fightersNames)
+            // Query the strikes for all users within the timer duration
+            Query query = validatedCollection.whereEqualTo("fighterNames", fightersNames)
                     .whereEqualTo("round", roundCounter)
-                    .whereLessThanOrEqualTo("elapsedTimeInSeconds", start / 1000)
-                    .whereGreaterThanOrEqualTo("elapsedTimeInSeconds", end / 1000);
-            validatedQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful()) {
-                        if (task.getResult().isEmpty()) {
-                            allValidated.set(false);
-                        }
-                    }
-                }
-            });
-        }
-
-        if (allValidated.get()) {
-            // Update the appropriate fields in the "Fights" collection based on the validated strikes
-            Query validatedQuery = validatedRef.whereEqualTo("fighterNames", fightersNames)
-                    .whereEqualTo("round", roundCounter);
-            validatedQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    .whereLessThanOrEqualTo("elapsedTimeInSeconds", startTimer / 1000)
+                    .whereGreaterThanOrEqualTo("elapsedTimeInSeconds", endTimer / 1000);
+            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         if (document.contains("redStrike")) {
+
                             // Update the appropriate field in the "Fights" collection based on the value of the "round" field in the document
                             if (document.getLong("round") == 1) {
                                 df.update("Red - Round 1", FieldValue.increment(1));
@@ -427,8 +422,10 @@ public class ScoringSystem extends AppCompatActivity {
                             } else if (document.getLong("round") == 3) {
                                 df.update("Red - Round 3", FieldValue.increment(1));
                             }
+
                         }
                         if (document.contains("blueStrike")) {
+
                             // Update the appropriate field in the "Fights" collection based on the value of the "round" field in the document
                             if (document.getLong("round") == 1) {
                                 df.update("Blue - Round 1", FieldValue.increment(1));
@@ -437,66 +434,11 @@ public class ScoringSystem extends AppCompatActivity {
                             } else if (document.getLong("round") == 3) {
                                 df.update("Blue - Round 3", FieldValue.increment(1));
                             }
+
                         }
-                        // Delete the validated strike document
-                        validatedRef.document(document.getId()).delete();
                     }
                 }
             });
         }
     }
-
-//    public void getValidatedStrikesCount(int roundCounter, String fightersNames) {
-//        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-//        CollectionReference validatedCollection = firestore.collection("Validated");
-//        CollectionReference fightsCollection = firestore.collection("Fights");
-//
-//        // Create a new document for the current fight
-//        DocumentReference df = fightsCollection.document(fightersNames);
-//
-//        // Loop through 5-second intervals of the timer
-//        for (int i = 300; i >= 0; i -= 5) {
-//            // Calculate the start and end times for the current 5-second interval
-//            long startTimer = i == 300 ? (i * 1000) - 1000 : i * 1000;
-//            long endTimer = (i - 5) * 1000;
-//
-//            // Query the strikes for all users within the timer duration
-//            Query query = validatedCollection.whereEqualTo("fighterNames", fightersNames)
-//                    .whereEqualTo("round", roundCounter)
-//                    .whereLessThanOrEqualTo("elapsedTimeInSeconds", startTimer / 1000)
-//                    .whereGreaterThanOrEqualTo("elapsedTimeInSeconds", endTimer / 1000);
-//            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                @Override
-//                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                    for (QueryDocumentSnapshot document : task.getResult()) {
-//                        if (document.contains("redStrike")) {
-//
-//                            // Update the appropriate field in the "Fights" collection based on the value of the "round" field in the document
-//                            if (document.getLong("round") == 1) {
-//                                df.update("Red - Round 1", FieldValue.increment(1));
-//                            } else if (document.getLong("round") == 2) {
-//                                df.update("Red - Round 2", FieldValue.increment(1));
-//                            } else if (document.getLong("round") == 3) {
-//                                df.update("Red - Round 3", FieldValue.increment(1));
-//                            }
-//
-//                        }
-//                        if (document.contains("blueStrike")) {
-//
-//                            // Update the appropriate field in the "Fights" collection based on the value of the "round" field in the document
-//                            if (document.getLong("round") == 1) {
-//                                df.update("Blue - Round 1", FieldValue.increment(1));
-//                            } else if (document.getLong("round") == 2) {
-//                                df.update("Blue - Round 2", FieldValue.increment(1));
-//                            } else if (document.getLong("round") == 3) {
-//                                df.update("Blue - Round 3", FieldValue.increment(1));
-//                            }
-//
-//                        }
-//                    }
-//                }
-//            });
-//        }
-//    }
-
 }

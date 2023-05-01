@@ -36,6 +36,6 @@ public class DetailActivity extends AppCompatActivity {
         wins_text.setText(Double.toString(wins));
         losses_text.setText(Double.toString(losses));
         draws_text.setText(Double.toString(draws));
-        imageView.setImageResource(R.drawable.ufc);
+        imageView.setImageResource(R.drawable.conormcgregor);
     }
 }

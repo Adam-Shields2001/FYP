@@ -30,7 +30,7 @@ public class Result extends AppCompatActivity {
     ArrayList<BarEntry> round2Data = new ArrayList<>();
     ArrayList<BarEntry> round3Data = new ArrayList<>();
 
-    String fightId = "Curtis Blaydes vs Sergei Pavlovich";
+    String fightId = "Henry Cejudo vs Aljamain Sterling";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

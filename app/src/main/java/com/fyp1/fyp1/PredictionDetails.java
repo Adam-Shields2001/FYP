@@ -32,7 +32,7 @@ public class PredictionDetails extends AppCompatActivity {
     private Spinner mFightSpinner;
     private Spinner mMethodSpinner;
     private Spinner mRoundSpinner;
-    private Button mSubmitButton;
+    private Button mSubmitButton, mViewPredictions;
     private FirebaseAuth mAuth;
     private String mCurrentUserId;
 
@@ -52,6 +52,17 @@ public class PredictionDetails extends AppCompatActivity {
         mMethodSpinner = findViewById(R.id.method_of_victory);
         mRoundSpinner = findViewById(R.id.predicted_round);
         mSubmitButton = findViewById(R.id.submit_button);
+        mViewPredictions = findViewById(R.id.view_predictions_button);
+
+        // Set click listener on view predictions button
+        mViewPredictions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Open the PredictionResult activity
+                Intent intent = new Intent(PredictionDetails.this, PredictionResult.class);
+                startActivity(intent);
+            }
+        });
 
         mMethodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

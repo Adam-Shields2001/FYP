@@ -190,18 +190,27 @@
 
     </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp">
-
-        <Button
-            android:id="@+id/submit_button"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Submit"
-            android:layout_centerInParent="true"/>
+            android:padding="16dp">
 
-    </RelativeLayout>
-</LinearLayout>
+            <Button
+                android:id="@+id/submit_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Submit"
+                android:layout_centerHorizontal="true"/>
+
+            <Button
+                android:id="@+id/view_predictions_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="View Predictions"
+                android:layout_below="@id/submit_button"
+                android:layout_centerHorizontal="true"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
 </ScrollView>

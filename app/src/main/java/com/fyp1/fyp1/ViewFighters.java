@@ -108,7 +108,7 @@ public class ViewFighters extends AppCompatActivity {
         }
 
         if(filteredList.isEmpty()){
-            Toast.makeText(this, "No data found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Fighter cant be found", Toast.LENGTH_SHORT).show();
         } else {
             adapter.setFilteredList(filteredList);
         }

@@ -30,6 +30,6 @@ public class EventDetailActivity extends AppCompatActivity {
         name_text.setText(name);
         season_text.setText(season);
         dateTime_text.setText(dateTime);
-        imageView.setImageResource(R.drawable.ufc);
+        imageView.setImageResource(R.drawable.ufc288);
     }
 }
