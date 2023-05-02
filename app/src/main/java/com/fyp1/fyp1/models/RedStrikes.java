@@ -4,7 +4,6 @@ public class RedStrikes extends Strikes {
     private int redStrike;
 
     public RedStrikes() {
-        // Default constructor required for calls to DataSnapshot.getValue(RedStrikes.class)
     }
 
     public RedStrikes(float elapsedTimeInSeconds, int round, String fighterNames, String uid, int redStrike) {

@@ -4,7 +4,7 @@ public class BlueStrikes extends Strikes {
     private int blueStrike;
 
     public BlueStrikes() {
-        // Default constructor required for calls to DataSnapshot.getValue(BlueStrikes.class)
+
     }
 
     public BlueStrikes(float elapsedTimeInSeconds, int round, String fighterNames, String uid, int blueStrike) {

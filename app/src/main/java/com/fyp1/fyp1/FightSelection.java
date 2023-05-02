@@ -43,12 +43,11 @@ public class FightSelection extends AppCompatActivity implements UFCEventAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fight_selection);
 
-        // Set up RecyclerView
+        // RecyclerView
         recyclerView = findViewById(R.id.ufcRecyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Create an empty adapter and set it to the RecyclerView
         adapter = new UFCEventAdapter(this, new ArrayList<>());
         recyclerView.setAdapter(adapter);
 

@@ -62,14 +62,10 @@ public class ChatRoom extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(messageAdapter);
 
-        // Get the ID of the currently signed in user
         FirebaseAuth auth = FirebaseAuth.getInstance();
         String userId = auth.getCurrentUser().getUid();
 
-        // Get a reference to the user's name in the Realtime Database
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("name");
-
-        // Attach a listener to the reference to read the user's name
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

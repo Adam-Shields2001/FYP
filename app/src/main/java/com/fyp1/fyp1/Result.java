@@ -44,11 +44,7 @@ public class Result extends AppCompatActivity {
 
     private void getRound1Data() {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-
-        // Assuming that you have a collection called "fights" in your database
         CollectionReference fightsRef = firestore.collection("Fights");
-
-        // Query for the fight document with the given ID
         DocumentReference fightDocRef = fightsRef.document(fightId);
 
         fightDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -57,13 +53,11 @@ public class Result extends AppCompatActivity {
                 if (documentSnapshot.exists()) {
                     int redScore = documentSnapshot.getLong("Red - Round 1").intValue();
                     int blueScore = documentSnapshot.getLong("Blue - Round 1").intValue();
-                    // Create new ArrayLists and add BarEntry objects to them
                     ArrayList<BarEntry> redRound1Data = new ArrayList<>();
                     redRound1Data.add(new BarEntry(1.6f, redScore));
                     ArrayList<BarEntry> blueRound1Data = new ArrayList<>();
                     blueRound1Data.add(new BarEntry(4.0f, blueScore));
 
-                    // Set the new ArrayLists as the data for the bar chart
                     BarChart round1BarChart = findViewById(R.id.round1_barchart);
                     BarDataSet redRound1DataSet = new BarDataSet(redRound1Data, "Red Fighter");
                     redRound1DataSet.setColor(Color.RED);
@@ -94,7 +88,6 @@ public class Result extends AppCompatActivity {
                         }
                     });
 
-                    // Notify the chart that the data has changed
                     round1BarChart.notifyDataSetChanged();
                     round1BarChart.invalidate();
                 }
@@ -104,11 +97,7 @@ public class Result extends AppCompatActivity {
 
     private void getRound2Data() {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-
-        // Assuming that you have a collection called "fights" in your database
         CollectionReference fightsRef = firestore.collection("Fights");
-
-        // Query for the fight document with the given ID
         DocumentReference fightDocRef = fightsRef.document(fightId);
 
         fightDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -117,13 +106,11 @@ public class Result extends AppCompatActivity {
                 if (documentSnapshot.exists()) {
                     int redScore = documentSnapshot.getLong("Red - Round 2").intValue();
                     int blueScore = documentSnapshot.getLong("Blue - Round 2").intValue();
-                    // Create new ArrayLists and add BarEntry objects to them
                     ArrayList<BarEntry> redRound2Data = new ArrayList<>();
                     redRound2Data.add(new BarEntry(1.6f, redScore));
                     ArrayList<BarEntry> blueRound2Data = new ArrayList<>();
                     blueRound2Data.add(new BarEntry(4.0f, blueScore));
 
-                    // Set the new ArrayLists as the data for the bar chart
                     BarChart round2BarChart = findViewById(R.id.round2_barchart);
                     BarDataSet redRound2DataSet = new BarDataSet(redRound2Data, "Red Fighter");
                     redRound2DataSet.setColor(Color.RED);
@@ -154,7 +141,6 @@ public class Result extends AppCompatActivity {
                         }
                     });
 
-                    // Notify the chart that the data has changed
                     round2BarChart.notifyDataSetChanged();
                     round2BarChart.invalidate();
                 }
@@ -164,11 +150,7 @@ public class Result extends AppCompatActivity {
 
     private void getRound3Data() {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-
-        // Assuming that you have a collection called "fights" in your database
         CollectionReference fightsRef = firestore.collection("Fights");
-
-        // Query for the fight document with the given ID
         DocumentReference fightDocRef = fightsRef.document(fightId);
 
         fightDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -177,13 +159,11 @@ public class Result extends AppCompatActivity {
                 if (documentSnapshot.exists()) {
                     int redScore = documentSnapshot.getLong("Red - Round 3").intValue();
                     int blueScore = documentSnapshot.getLong("Blue - Round 3").intValue();
-                    // Create new ArrayLists and add BarEntry objects to them
                     ArrayList<BarEntry> redRound3Data = new ArrayList<>();
                     redRound3Data.add(new BarEntry(1.6f, redScore));
                     ArrayList<BarEntry> blueRound3Data = new ArrayList<>();
                     blueRound3Data.add(new BarEntry(4.0f, blueScore));
 
-                    // Set the new ArrayLists as the data for the bar chart
                     BarChart round3BarChart = findViewById(R.id.round3_barchart);
                     BarDataSet redRound3DataSet = new BarDataSet(redRound3Data, "Red Fighter");
                     redRound3DataSet.setColor(Color.RED);
@@ -214,7 +194,6 @@ public class Result extends AppCompatActivity {
                         }
                     });
 
-                    // Notify the chart that the data has changed
                     round3BarChart.notifyDataSetChanged();
                     round3BarChart.invalidate();
                 }

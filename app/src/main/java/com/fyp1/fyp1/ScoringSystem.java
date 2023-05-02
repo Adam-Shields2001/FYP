@@ -187,7 +187,7 @@ public class ScoringSystem extends AppCompatActivity {
     }
 
     private void startTimer() {
-        countDownTimer = new CountDownTimer(1000, 1000) {
+        countDownTimer = new CountDownTimer(30000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 timeLeftInMillis = millisUntilFinished;
@@ -215,12 +215,10 @@ public class ScoringSystem extends AppCompatActivity {
                 FirebaseFirestore firestore = FirebaseFirestore.getInstance();
                 CollectionReference strikesCollection = firestore.collection("Strikes");
 
-                // Get the current user's uid and create new document
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 String uid = user.getUid();
                 DocumentReference documentReference = strikesCollection.document();
 
-                // Create a new BlueStrikes object
                 String fightersNames = firstName1 + " " + lastName1 + " vs " + firstName2 + " " + lastName2;
                 RedStrikes redStrikes = new RedStrikes(elapsedTimeInSeconds, roundCounter, fightersNames, uid, redStrike);
 
@@ -253,12 +251,10 @@ public class ScoringSystem extends AppCompatActivity {
                 FirebaseFirestore firestore = FirebaseFirestore.getInstance();
                 CollectionReference strikesCollection = firestore.collection("Strikes");
 
-                // Get the current user's uid and create new document
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 String uid = user.getUid();
                 DocumentReference documentReference = strikesCollection.document();
 
-                // Create a new BlueStrikes object
                 String fightersNames = firstName1 + " " + lastName1 + " vs " + firstName2 + " " + lastName2;
                 BlueStrikes blueStrikes = new BlueStrikes(elapsedTimeInSeconds, roundCounter, fightersNames, uid, blueStrike);
 
@@ -387,10 +383,8 @@ public class ScoringSystem extends AppCompatActivity {
                         }
                     });
                 }
-                // Call the callback.run() here, before calling getValidatedStrikesCount()
                 callback.run();
 
-                // Call getValidatedStrikesCount() after the "Validated" collection has been updated
                 getValidatedStrikesCount(roundCounter, fightersNames);
             }
         });
@@ -420,8 +414,6 @@ public class ScoringSystem extends AppCompatActivity {
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         if (document.contains("redStrike")) {
-
-                            // Update the appropriate field in the "Fights" collection based on the value of the "round" field in the document
                             if (document.getLong("round") == 1) {
                                 df.update("Red - Round 1", FieldValue.increment(1));
                             } else if (document.getLong("round") == 2) {
@@ -432,8 +424,6 @@ public class ScoringSystem extends AppCompatActivity {
 
                         }
                         if (document.contains("blueStrike")) {
-
-                            // Update the appropriate field in the "Fights" collection based on the value of the "round" field in the document
                             if (document.getLong("round") == 1) {
                                 df.update("Blue - Round 1", FieldValue.increment(1));
                             } else if (document.getLong("round") == 2) {
